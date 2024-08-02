@@ -1,6 +1,8 @@
 ---
 namespace: [A, B]
 
+python_dir: [sample]
+
 structs:
   Test1:
     json: true

@@ -1,3 +1,3 @@
 runtimepy>=2.13.3
-vcorelib>=3.0.0
+vcorelib>=3.3.4
 pytest<8.0.0; sys_platform == 'win32'

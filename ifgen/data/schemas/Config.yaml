@@ -7,12 +7,6 @@ additionalProperties: false
 required: []
 
 properties:
-  source_dir:
-    type: array
-    default: [src]
-    items:
-      type: string
-
   output_dir:
     type: array
     default: [generated]
@@ -22,6 +16,16 @@ properties:
   test_dir:
     type: array
     default: [apps, generated]
+    items:
+      type: string
+
+  cpp_dir:
+    type: array
+    default: [src]
+    items:
+      type: string
+  python_dir:
+    type: array
     items:
       type: string
 

@@ -6,14 +6,15 @@ A module implementing a generation-environment interface.
 from enum import StrEnum
 from pathlib import Path
 from shutil import rmtree
-from typing import Any
+from typing import Any, NamedTuple, Optional
 
 # third-party
 from runtimepy.codec.protocol import Protocol
 from runtimepy.codec.system import TypeSystem
 from runtimepy.enum import RuntimeEnum
 from vcorelib.logging import LoggerMixin
-from vcorelib.paths import normalize, rel
+from vcorelib.names import to_snake
+from vcorelib.paths import normalize, prune_empty_directories, rel
 
 # internal
 from ifgen import PKG_NAME
@@ -29,6 +30,35 @@ class Generator(StrEnum):
     STRUCTS = "structs"
     ENUMS = "enums"
     IFGEN = PKG_NAME
+
+
+class Language(StrEnum):
+    """An enumeration declaring output generation variants."""
+
+    CPP = "CPP"
+    PYTHON = "Python"
+
+    @property
+    def source_suffix(self) -> str:
+        """Get a source-file suffix for this language."""
+        return "cc" if self is Language.CPP else "py"
+
+    @property
+    def header_suffix(self) -> str:
+        """Get a header-file suffix for this language."""
+        return "h" if self is Language.CPP else "py"
+
+    @property
+    def slug(self) -> str:
+        """Get a slug string."""
+        return to_snake(self.name)
+
+    @property
+    def cfg_dir_name(self) -> str:
+        """
+        Get the configuration key for this language's output configuration.
+        """
+        return f"{self.slug}_dir"
 
 
 def runtime_enum_data(data: dict[str, Any]) -> dict[str, int]:
@@ -50,6 +80,21 @@ def runtime_enum_data(data: dict[str, Any]) -> dict[str, int]:
     return result
 
 
+class Directories(NamedTuple):
+    """A collection of directories relevant to code generation outputs."""
+
+    config_parts: list[str]
+    source: Path
+    output: Path
+    test_dir: Path
+
+    def prune_empty(self) -> None:
+        """Attempt to eliminate any empty output directories."""
+
+        for path in (self.source, self.output, self.test_dir):
+            prune_empty_directories(path)
+
+
 class IfgenEnvironment(LoggerMixin):
     """A class for managing stateful information while generating outputs."""
 
@@ -60,29 +105,52 @@ class IfgenEnvironment(LoggerMixin):
         self.root_path = root
         self.config = config
 
-        self.source = combine_if_not_absolute(
-            self.root_path, normalize(*self.config.data["source_dir"])
-        )
-        self.output = combine_if_not_absolute(
-            self.source, normalize(*self.config.data["output_dir"])
-        )
-        self.test_dir = combine_if_not_absolute(
-            self.source, normalize(*self.config.data["test_dir"])
-        )
+        # Load per-language directories.
+        self.directories: dict[Language, Directories] = {}
+        for language in Language:
+            result = self.get_dirs(language)
+            if result is not None:
+                self.directories[language] = result
 
         self.generated: set[Path] = set()
 
         # Create output directories.
-        for subdir in Generator:
-            for path in [self.output, self.test_dir]:
-                dest = path.joinpath(subdir)
-                rmtree(dest, ignore_errors=True)
-                dest.mkdir(parents=True, exist_ok=True)
+        for language, dirs in self.directories.items():
+            for subdir in Generator:
+                for path in [dirs.output, dirs.test_dir]:
+                    dest = path.joinpath(subdir)
+                    rmtree(dest, ignore_errors=True)
+                    dest.mkdir(parents=True, exist_ok=True)
 
         self.types = TypeSystem(*self.config.data["namespace"])
         self.padding = PaddingManager()
         self._register_enums()
         self._register_structs()
+
+    def prune_empty(self) -> None:
+        """Attempt to eliminate any empty output directories."""
+
+        for dirs in self.directories.values():
+            dirs.prune_empty()
+
+    def get_dirs(self, langauge: Language) -> Optional[Directories]:
+        """Get source, output and test directories."""
+
+        result = None
+
+        cfg_dir = langauge.cfg_dir_name
+        if cfg_dir in self.config.data:
+            dirs = self.config.data[cfg_dir]
+            source = combine_if_not_absolute(self.root_path, normalize(*dirs))
+            output = combine_if_not_absolute(
+                source, normalize(*self.config.data["output_dir"])
+            )
+            test_dir = combine_if_not_absolute(
+                source, normalize(*self.config.data["test_dir"])
+            )
+            result = Directories(dirs, source, output, test_dir)
+
+        return result
 
     def _register_enums(self) -> None:
         """Register configuration enums."""
@@ -140,34 +208,45 @@ class IfgenEnvironment(LoggerMixin):
         self,
         name: str,
         generator: Generator,
+        language: Language,
         from_output: bool = False,
         track: bool = True,
     ) -> Path:
         """Make part of a task's path."""
 
-        result = Path(str(generator), f"{name}.h")
+        if language is Language.PYTHON:
+            name = to_snake(name)
+
+        result = Path(str(generator), f"{name}.{language.header_suffix}")
 
         if from_output:
-            result = self.output.joinpath(result)
+            result = self.directories[language].output.joinpath(result)
 
         if track:
             self.generated.add(result)
 
         return result
 
-    def rel_include(self, name: str, generator: Generator) -> Path:
-        """Get an include path to a generated output."""
-
-        return rel(self.output, base=self.source).joinpath(
-            self.make_path(name, generator, track=False)
-        )
-
-    def make_test_path(self, name: str, generator: Generator) -> Path:
+    def make_test_path(
+        self, name: str, generator: Generator, language: Language
+    ) -> Path:
         """Make a path to an interface's unit-test suite."""
 
-        result = self.test_dir.joinpath(str(generator), f"test_{name}.cc")
+        result = self.directories[language].test_dir.joinpath(
+            str(generator), f"test_{name}.{language.source_suffix}"
+        )
         self.generated.add(result)
         return result
+
+    def rel_include(
+        self, name: str, generator: Generator, language: Language
+    ) -> Path:
+        """Get an include path to a generated output."""
+
+        return rel(
+            self.directories[language].output,
+            base=self.directories[language].source,
+        ).joinpath(self.make_path(name, generator, language, track=False))
 
     def get_protocol(self, name: str, exact: bool = False) -> Protocol:
         """Get the protocol instance for a given struct."""

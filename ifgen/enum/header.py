@@ -10,6 +10,7 @@ from vcorelib.io import IndentedFileWriter
 
 # internal
 from ifgen.enum.common import enum_to_string_function, string_to_enum_function
+from ifgen.enum.python import python_enum_header
 from ifgen.generation.interface import GenerateTask
 from ifgen.generation.json import to_json_method
 
@@ -30,8 +31,8 @@ def enum_line(name: str, value: EnumConfig) -> str:
     return line
 
 
-def enum_header(task: GenerateTask, writer: IndentedFileWriter) -> None:
-    """Create a header file for an enumeration."""
+def cpp_enum_neader(task: GenerateTask, writer: IndentedFileWriter) -> None:
+    """Create a C++ enumeration header."""
 
     writer.write(f"enum class {task.name} : {task.instance['underlying']}")
     with writer.scope(suffix=";"):
@@ -81,3 +82,12 @@ def enum_header(task: GenerateTask, writer: IndentedFileWriter) -> None:
             definition=True,
             inline=True,
         )
+
+
+def enum_header(task: GenerateTask, writer: IndentedFileWriter) -> None:
+    """Create a header file for an enumeration."""
+
+    if task.is_cpp:
+        cpp_enum_neader(task, writer)
+    elif task.is_python:
+        python_enum_header(task, writer)
