@@ -85,3 +85,17 @@ def python_enum_header(task: GenerateTask, writer: IndentedFileWriter) -> None:
                 line += f"  # {value['description']}"
 
             writer.write(line)
+
+        writer.empty()
+
+        runtime = task.enum()
+
+        with python_function(
+            writer,
+            "id",
+            "Get this enumeration's integer identifier.",
+            return_type="int",
+            final_empty=0,
+            decorators=["staticmethod"],
+        ):
+            writer.write(f"return {runtime.id}")

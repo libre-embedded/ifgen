@@ -265,8 +265,8 @@ class GenerateTask(NamedTuple):
             # Write file header.
             self.javadoc_header(writer, json=json)
 
-            writer.empty()
             if self.is_cpp:
+                writer.empty()
                 if not is_test:
                     writer.write("#pragma once")
                 else:

@@ -16,5 +16,17 @@ def python_struct_header(
 
     writer.empty()
 
+    # need to sub-class 'runtimepy.codec.protocol.ProtocolFactory'
+    # protocol = Protocol(EnumRegistry(), identifier=???, byte_order=???)
+    # then just need to implement 'initialize' method
+
+    # how nested structs work: assert that 'protocol' doesn't have attribute
+    # for name of field, assign an .instance() of this field's protocol class
+    # to that named attribute, add that protocol's array as a named
+    # serializeable as well
+
+    # should be able to test correctness with to_stream / from_stream etc.
+    # (do this in runtimepy)
+
     del task
     writer.write("# todo")
