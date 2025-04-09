@@ -158,6 +158,7 @@ def cpp_struct_header(task: GenerateTask, writer: IndentedFileWriter) -> None:
                     )
                 )
 
+            # trace=True
             size = task.env.size(task.name)
             enforce_expected_size(size, task.instance, task.name)
 

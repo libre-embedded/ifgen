@@ -264,9 +264,13 @@ class IfgenEnvironment(LoggerMixin):
         except KeyError:
             return False
 
-    def size(self, type_name: str, exact: bool = False) -> int:
+    def size(
+        self, type_name: str, exact: bool = False, trace: bool = False
+    ) -> int:
         """Get the size of a given type."""
-        return self.types.size(type_string(type_name), exact=exact)
+        return self.types.size(
+            type_string(type_name), exact=exact, trace=trace
+        )
 
     def get_enum(self, name: str, exact: bool = False) -> RuntimeEnum:
         """Get a runtime enum instance for a given enumeration."""
