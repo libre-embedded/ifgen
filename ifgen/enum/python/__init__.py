@@ -46,6 +46,7 @@ def python_enum_header(task: GenerateTask, writer: IndentedFileWriter) -> None:
     built_in = {}
     if uses_auto(task):
         built_in["enum"] = ["auto"]
+    built_in["typing"] = ["Optional"]
 
     # Write imports.
     python_imports(
@@ -61,20 +62,7 @@ def python_enum_header(task: GenerateTask, writer: IndentedFileWriter) -> None:
         parents=["RuntimeIntEnum"],
         final_empty=0,
     ):
-        underlying = strip_t_suffix(task.instance["underlying"])
-
-        if underlying != DEFAULT_ENUM_PRIMITIVE:
-            with python_function(
-                writer,
-                "primitive",
-                "The underlying primitive type for this runtime enumeration.",
-                params="cls",
-                return_type="str",
-                final_empty=1,
-                decorators=["classmethod"],
-            ):
-                writer.write(f'return "{underlying}"')
-
+        # Write values.
         for enum, value in task.instance.get("enum", {}).items():
             final = "auto()"
             if value:
@@ -88,14 +76,28 @@ def python_enum_header(task: GenerateTask, writer: IndentedFileWriter) -> None:
 
         writer.empty()
 
-        runtime = task.enum()
+        # Override underlying primitive if necessary.
+        underlying = strip_t_suffix(task.instance["underlying"])
+        if underlying != DEFAULT_ENUM_PRIMITIVE:
+            with python_function(
+                writer,
+                "primitive",
+                "The underlying primitive type for this runtime enumeration.",
+                params="cls",
+                return_type="str",
+                final_empty=1,
+                decorators=["classmethod"],
+            ):
+                writer.write(f'return "{underlying}"')
 
+        # Write identifier.
         with python_function(
             writer,
             "id",
             "Get this enumeration's integer identifier.",
-            return_type="int",
+            params="cls",
+            return_type="Optional[int]",
             final_empty=0,
-            decorators=["staticmethod"],
+            decorators=["classmethod"],
         ):
-            writer.write(f"return {runtime.id}")
+            writer.write(f"return {task.enum().id}")
