@@ -45,10 +45,9 @@ def wrapper_method(
     line = ""
 
     line += (
-        " " * len(line_start) if header else ""
-    ) + "std::endian endianness"
-    line += " = std::endian::native"
-    line += ")"
+        (" " * len(line_start) if header else "") + "std::endian endianness = "
+        f"std::endian::{task.instance['default_endianness']})"
+    )
 
     if is_encode:
         line += " const"
