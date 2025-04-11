@@ -29,6 +29,7 @@ def python_imports(
     writer: IndentedFileWriter,
     built_in: PythonImports = None,
     third_party: PythonImports = None,
+    internal: PythonImports = None,
     final_empty: int = 2,
 ) -> None:
     """Write Python-module imports."""
@@ -37,6 +38,8 @@ def python_imports(
         write_imports(writer, "built-in", built_in)
     if third_party:
         write_imports(writer, "third-party", third_party)
+    if internal:
+        write_imports(writer, "internal", internal)
 
     writer.empty(count=final_empty)
 

@@ -11,6 +11,7 @@ from ifgen.generation.interface import GenerateTask
 from ifgen.struct.header import struct_header
 from ifgen.struct.source import create_struct_source
 from ifgen.struct.test import create_struct_test
+from ifgen.struct.util import struct_dependencies
 
 __all__ = ["create_struct", "create_struct_test", "create_struct_source"]
 FieldConfig = Dict[str, Union[int, str]]
@@ -24,29 +25,6 @@ def header_for_type(name: str, task: GenerateTask) -> str:
         return f'"{candidate}"'
 
     return ""
-
-
-def struct_dependencies(task: GenerateTask) -> set[str]:
-    """Generates string type names for dependencies."""
-
-    unique = set()
-
-    for config in task.instance["fields"]:
-        if "type" in config:
-            unique.add(config["type"])
-
-        # Add includes for bit-fields.
-        for bit_field in config.get("fields", []):
-            if "type" in bit_field:
-                unique.add(bit_field["type"])
-
-        # Add includes for alternates.
-        for alternate in config.get("alternates", []):
-            for alternate_bit_field in alternate.get("fields", []):
-                if "type" in alternate_bit_field:
-                    unique.add(alternate_bit_field["type"])
-
-    return unique
 
 
 def struct_includes(task: GenerateTask) -> Iterable[str]:
