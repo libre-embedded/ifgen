@@ -26,29 +26,34 @@ def header_for_type(name: str, task: GenerateTask) -> str:
     return ""
 
 
-def struct_includes(task: GenerateTask) -> Iterable[str]:
-    """Determine headers that need to be included for a given struct."""
+def struct_dependencies(task: GenerateTask) -> set[str]:
+    """Generates string type names for dependencies."""
 
-    result = set()
+    unique = set()
+
     for config in task.instance["fields"]:
         if "type" in config:
-            result.add(header_for_type(config["type"], task))
+            unique.add(config["type"])
 
         # Add includes for bit-fields.
         for bit_field in config.get("fields", []):
             if "type" in bit_field:
-                result.add(header_for_type(bit_field["type"], task))
+                unique.add(bit_field["type"])
 
         # Add includes for alternates.
         for alternate in config.get("alternates", []):
             for alternate_bit_field in alternate.get("fields", []):
                 if "type" in alternate_bit_field:
-                    result.add(
-                        header_for_type(alternate_bit_field["type"], task)
-                    )
+                    unique.add(alternate_bit_field["type"])
 
-    result.add(f'"../{PKG_NAME}/common.h"')
+    return unique
 
+
+def struct_includes(task: GenerateTask) -> Iterable[str]:
+    """Determine headers that need to be included for a given struct."""
+
+    result = [header_for_type(x, task) for x in struct_dependencies(task)]
+    result.append(f'"../{PKG_NAME}/common.h"')
     return result
 
 
