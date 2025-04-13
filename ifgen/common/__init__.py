@@ -10,12 +10,18 @@ from ifgen.generation.test import unit_test_boilerplate
 def create_common_test(task: GenerateTask) -> None:
     """Create a unit test for the enum string-conversion methods."""
 
+    if task.is_python:
+        return
+
     with unit_test_boilerplate(task, declare_namespace=True) as writer:
         writer.cpp_comment("TODO.")
 
 
 def create_common(task: GenerateTask) -> None:
     """Create a unit test for the enum string-conversion methods."""
+
+    if task.is_python:
+        return
 
     streams = task.stream_implementation
 

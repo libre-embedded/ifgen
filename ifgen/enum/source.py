@@ -21,6 +21,9 @@ def enum_source(task: GenerateTask, writer: IndentedFileWriter) -> None:
 def create_enum_source(task: GenerateTask) -> None:
     """Create a source file based on an enum definition."""
 
+    if task.is_python:
+        return
+
     if task.instance["use_map"]:
         with task.source_boilerplate(["<map>", "<string>"]) as writer:
             enum_source(task, writer)

@@ -14,3 +14,17 @@ def combine_if_not_absolute(root: Path, candidate: Pathlike) -> Path:
 
     candidate = normalize(candidate)
     return candidate if candidate.is_absolute() else root.joinpath(candidate)
+
+
+def audit_init_file(source: Path, parent_depth: int = 0) -> None:
+    """Create initialization files if necessary."""
+
+    candidate = source.parent.joinpath("__init__.py")
+    if not candidate.exists():
+        with candidate.open("wb") as stream:
+            stream.write(bytes())
+
+    # Audit parent directories.
+    if parent_depth > 0:
+        parent_depth -= 1
+        audit_init_file(source.parent, parent_depth=parent_depth)

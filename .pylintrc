@@ -3,6 +3,7 @@ max-args=9
 max-positional-arguments=9
 max-attributes=8
 max-locals=17
+max-public-methods=21
 
 [MESSAGES CONTROL]
 disable=duplicate-code

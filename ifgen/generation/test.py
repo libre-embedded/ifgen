@@ -73,7 +73,7 @@ def unit_test_boilerplate(
 ) -> Iterator[IndentedFileWriter]:
     """Handle standard unit-test boilerplate."""
 
-    include = task.env.rel_include(task.name, task.generator)
+    include = task.env.rel_include(task.name, task.generator, task.language)
 
     if includes is None:
         includes = []
@@ -92,7 +92,6 @@ def unit_test_boilerplate(
                 + includes,
                 is_test=True,
                 use_namespace=False,
-                description=False,
             )
         )
 
