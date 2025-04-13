@@ -15,7 +15,7 @@ ci_local:
   - "- run: pip${{'{{matrix.python-version}}'}} install yambs"
 
 requirements:
-  - runtimepy>=5.11.1
+  - runtimepy>=5.11.4
   - vcorelib>=3.3.4
   - "pytest<8.0.0; sys_platform == 'win32'"
 

@@ -49,7 +49,7 @@ structs:
           - {name: bit_field1, index: 0, write: false}
           - {name: bit_field2, index: 1, read: false}
           - {name: bit_field3, index: 2}
-          - {name: bit_field4, index: 3}
+          - {name: bit_field4, index: 3, description: Random field.}
           - {name: bit_field5, index: 4, width: 4, type: "int8_t"}
           - {name: bit_field6, index: 8, width: 10}
           - {name: bit_field7, index: 18, width: 3, type: "C::Enum2"}
