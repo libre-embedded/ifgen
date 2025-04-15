@@ -56,11 +56,7 @@ def cpp_enum_neader(task: GenerateTask, writer: IndentedFileWriter) -> None:
 
     if task.instance["identifier"]:
         writer.write(
-            (
-                "static constexpr "
-                f"{task.env.config.data['enum']['id_underlying']} "
-                f"{task.name}_id = {runtime.id};"
-            )
+            f"static constexpr enum_id_t {task.name}_id = {runtime.id};"
         )
         writer.empty()
 

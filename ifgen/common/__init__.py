@@ -44,6 +44,20 @@ def create_common(task: GenerateTask) -> None:
         writer.write(
             "              std::endian::native == std::endian::little);"
         )
+        writer.empty()
+
+        data = task.env.config.data
+
+        endian = data["struct"]["default_endianness"]
+        writer.c_comment("Default endianness configured.")
+        writer.write(
+            f"static constexpr auto default_endian = std::endian::{endian};"
+        )
+
+        writer.empty()
+        writer.c_comment("Configured primitives for identifiers.")
+        writer.write(f"using struct_id_t = {data['struct']['id_underlying']};")
+        writer.write(f"using enum_id_t = {data['enum']['id_underlying']};")
 
         with writer.padding():
             writer.c_comment("Create useful aliases for bytes.")

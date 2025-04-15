@@ -19,11 +19,8 @@ properties:
     type: boolean
   unit_test:
     type: boolean
-
-  # https://en.cppreference.com/w/cpp/types/endian
   default_endianness:
     type: string
-    default: native
     enum: [little, big, native]
 
   instances:

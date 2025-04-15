@@ -62,6 +62,12 @@ properties:
         type: boolean
         default: true
 
+      # https://en.cppreference.com/w/cpp/types/endian
+      default_endianness:
+        type: string
+        default: native
+        enum: [little, big, native]
+
       id_underlying: &id_underlying
         type: string
         default: uint16_t

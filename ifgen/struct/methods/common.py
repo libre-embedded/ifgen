@@ -44,10 +44,15 @@ def wrapper_method(
     writer.write(line)
     line = ""
 
-    line += (
-        (" " * len(line_start) if header else "") + "std::endian endianness = "
-        f"std::endian::{task.instance['default_endianness']})"
+    endian = (
+        f"std::endian::{task.instance['default_endianness']}"
+        if task.instance["default_endianness"]
+        != task.env.config.data["struct"]["default_endianness"]
+        else "default_endian"
     )
+    line += (
+        " " * len(line_start) if header else ""
+    ) + f"std::endian endianness = {endian})"
 
     if is_encode:
         line += " const"

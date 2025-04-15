@@ -148,11 +148,9 @@ def cpp_struct_header(task: GenerateTask, writer: IndentedFileWriter) -> None:
             style=CommentStyle.C_DOXYGEN
         ) as lines:
             if task.instance["identifier"]:
-                underlying = task.env.config.data["struct"]["id_underlying"]
                 lines.append(
                     (
-                        "static constexpr "
-                        f"{underlying} "
+                        "static constexpr struct_id_t "
                         f"id = {task.protocol().id};",
                         f"{task.name}'s identifier.",
                     )
