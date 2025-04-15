@@ -14,7 +14,7 @@ from runtimepy.codec.system import TypeSystem
 from runtimepy.enum import RuntimeEnum
 from vcorelib.logging import LoggerMixin
 from vcorelib.names import to_snake
-from vcorelib.paths import normalize, prune_empty_directories, rel
+from vcorelib.paths import normalize, prune_empty_directories
 
 # internal
 from ifgen import PKG_NAME
@@ -243,10 +243,11 @@ class IfgenEnvironment(LoggerMixin):
     ) -> Path:
         """Get an include path to a generated output."""
 
-        return rel(
-            self.directories[language].output,
-            base=self.directories[language].source,
-        ).joinpath(self.make_path(name, generator, language, track=False))
+        return (
+            self.directories[language]
+            .output.relative_to(self.directories[language].source)
+            .joinpath(self.make_path(name, generator, language, track=False))
+        )
 
     def get_protocol(self, name: str, exact: bool = False) -> Protocol:
         """Get the protocol instance for a given struct."""
