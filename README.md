@@ -1,35 +1,29 @@
 <!--
     =====================================
     generator=datazen
-    version=3.2.0
-    hash=ef7bc8d59b60de4ef353d5094cd4a297
+    version=3.2.1
+    hash=d7d621b5ffb3b9f1fa46e8fd6ea5ae27
     =====================================
 -->
 
-# ifgen ([4.0.0](https://pypi.org/project/ifgen/))
+# ifgen ([4.0.1](https://pypi.org/project/ifgen/))
 
 [![python](https://img.shields.io/pypi/pyversions/ifgen.svg)](https://pypi.org/project/ifgen/)
-![Build Status](https://github.com/vkottler/ifgen/workflows/Python%20Package/badge.svg)
-[![codecov](https://codecov.io/gh/vkottler/ifgen/branch/master/graphs/badge.svg?branch=master)](https://codecov.io/github/vkottler/ifgen)
+![Build Status](https://github.com/libre-embedded/ifgen/workflows/Python%20Package/badge.svg)
+[![codecov](https://codecov.io/gh/libre-embedded/ifgen/branch/master/graphs/badge.svg?branch=master)](https://codecov.io/github/libre-embedded/ifgen)
 ![PyPI - Status](https://img.shields.io/pypi/status/ifgen)
 ![Dependents (via libraries.io)](https://img.shields.io/librariesio/dependents/pypi/ifgen)
 
 *An interface generator for distributed computing.*
 
-## Documentation
-
-### Generated
-
-* By [sphinx-apidoc](https://vkottler.github.io/python/sphinx/ifgen)
-(What's [`sphinx-apidoc`](https://www.sphinx-doc.org/en/master/man/sphinx-apidoc.html)?)
-* By [pydoc](https://vkottler.github.io/python/pydoc/ifgen.html)
-(What's [`pydoc`](https://docs.python.org/3/library/pydoc.html)?)
+([interface documentation](https://libre-embedded.github.io/python/ifgen))
 
 ## Python Version Support
 
 This package is tested with the following Python minor versions:
 
 * [`python3.12`](https://docs.python.org/3.12/)
+* [`python3.13`](https://docs.python.org/3.13/)
 
 ## Platform Support
 
