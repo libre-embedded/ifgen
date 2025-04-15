@@ -3,7 +3,7 @@ A module implementing interfaces for struct-file generation.
 """
 
 # built-in
-from typing import Dict, Iterable, Union
+from typing import Any, Dict, Iterable, Union
 
 # internal
 from ifgen import PKG_NAME
@@ -27,11 +27,34 @@ def header_for_type(name: str, task: GenerateTask) -> str:
     return ""
 
 
+FLOAT = {"float": "std::float32_t", "double": "std::float64_t"}
+VALID = {"std::float32_t", "std::float64_t"}
+
+
+def handle_struct_field_type(data: dict[str, Any]) -> bool:
+    """Handle struct-field floating-point types."""
+
+    if data["type"] in FLOAT:
+        data["type"] = FLOAT[data["type"]]
+
+    return data["type"] in VALID
+
+
 def struct_includes(task: GenerateTask) -> Iterable[str]:
     """Determine headers that need to be included for a given struct."""
 
     result = [header_for_type(x, task) for x in struct_dependencies(task)]
+
+    include_float = False
+    for field in task.instance["fields"]:
+        if handle_struct_field_type(field):
+            include_float = True
+
+    if include_float:
+        result.append("<stdfloat>")
+
     result.append(f'"../{PKG_NAME}/common.h"')
+
     return result
 
 
