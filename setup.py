@@ -1,7 +1,7 @@
 # =====================================
 # generator=datazen
-# version=3.2.0
-# hash=3bac2a3bc0b9200d68535b5383b9886e
+# version=3.2.1
+# hash=29f7a3ed2235c1d36295ca5c1add475c
 # =====================================
 
 """
@@ -18,9 +18,9 @@ except (ImportError, ModuleNotFoundError):
 from ifgen import DESCRIPTION, PKG_NAME, VERSION
 
 author_info = {
-    "name": "Vaughn Kottler",
-    "email": "vaughnkottler@gmail.com",
-    "username": "vkottler",
+    "name": "Libre Embedded",
+    "email": "vaughn@libre-embedded.com",
+    "username": "libre-embedded",
 }
 pkg_info = {
     "name": PKG_NAME,
@@ -29,6 +29,7 @@ pkg_info = {
     "description": DESCRIPTION,
     "versions": [
         "3.12",
+        "3.13",
     ],
 }
 setup(
