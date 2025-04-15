@@ -39,7 +39,12 @@ class Config(IfgenDictCodec, _BasicDictCodec):
                 )
 
         # Forward struct settings.
-        struct_forwards = common + ["codec", "stream", "methods"]
+        struct_forwards = common + [
+            "codec",
+            "stream",
+            "methods",
+            "default_endianness",
+        ]
         struct: dict[str, Any]
         for struct in data.get("structs", {}).values():  # type: ignore
             for forward in struct_forwards:
