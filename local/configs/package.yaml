@@ -12,11 +12,14 @@ ci_local:
 
   - "- run: sudo apt-get install gcc-13 g++-13 clang-18 clang-format-18"
   - "  if: matrix.system == 'ubuntu-latest'"
+
+  - "- run: pip${{'{{matrix.python-version}}'}} install -e ."
   - "- run: pip${{'{{matrix.python-version}}'}} install yambs"
+  - "- run: mk python-editable"
 
 requirements:
   - runtimepy>=5.11.4
-  - vcorelib>=3.3.4
+  - vcorelib>=3.5.7
   - "pytest<8.0.0; sys_platform == 'win32'"
 
 dev_requirements:

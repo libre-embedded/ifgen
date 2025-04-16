@@ -39,6 +39,16 @@ class TypeLookup(NamedTuple):
     generator: Generator
 
 
+def apply_cpp_namespace(
+    name: str, data: str, header: bool = True, prefix: str = None
+) -> str:
+    """Namespace a string with this task's name."""
+
+    if not header:
+        data = f"{name}::{data}"
+    return data if not prefix else prefix + data
+
+
 class GenerateTask(NamedTuple):
     """A container for instance-generation tasks."""
 
@@ -57,9 +67,9 @@ class GenerateTask(NamedTuple):
     ) -> str:
         """Namespace a string with this task's name."""
 
-        if not header:
-            data = f"{self.name}::{data}"
-        return data if not prefix else prefix + data
+        return apply_cpp_namespace(
+            self.name, data, header=header, prefix=prefix
+        )
 
     @property
     def is_python(self) -> bool:
@@ -157,7 +167,9 @@ class GenerateTask(NamedTuple):
 
         with ExitStack() as stack:
             writer = stack.enter_context(
-                IndentedFileWriter.from_path(self.source_path, per_indent=4)
+                IndentedFileWriter.from_path_if_different(
+                    self.source_path, per_indent=4
+                )
             )
 
             self.javadoc_header(writer)
@@ -259,7 +271,7 @@ class GenerateTask(NamedTuple):
 
         with ExitStack() as stack:
             writer = stack.enter_context(
-                IndentedFileWriter.from_path(path, per_indent=4)
+                IndentedFileWriter.from_path_if_different(path, per_indent=4)
             )
 
             # Write file header.

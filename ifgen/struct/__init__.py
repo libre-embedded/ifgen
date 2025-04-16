@@ -9,11 +9,10 @@ from typing import Dict, Iterable, Union
 from ifgen import PKG_NAME
 from ifgen.generation.interface import GenerateTask
 from ifgen.struct.header import struct_header
-from ifgen.struct.source import create_struct_source
 from ifgen.struct.test import create_struct_test
 from ifgen.struct.util import struct_dependencies
 
-__all__ = ["create_struct", "create_struct_test", "create_struct_source"]
+__all__ = ["create_struct", "create_struct_test"]
 FieldConfig = Dict[str, Union[int, str]]
 
 

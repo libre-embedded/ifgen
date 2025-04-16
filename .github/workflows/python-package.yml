@@ -46,7 +46,9 @@ jobs:
         if: matrix.system == 'ubuntu-latest'
       - run: sudo apt-get install gcc-13 g++-13 clang-18 clang-format-18
         if: matrix.system == 'ubuntu-latest'
+      - run: pip${{matrix.python-version}} install -e .
       - run: pip${{matrix.python-version}} install yambs
+      - run: mk python-editable
       # End project-specific setup.
 
       - run: mk python-sa-types
@@ -83,7 +85,7 @@ jobs:
 
       - run: |
           mk python-release owner=libre-embedded \
-                            repo=ifgen version=4.0.2
+                            repo=ifgen version=4.1.0
         if: |
           matrix.python-version == '3.12'
           && matrix.system == 'ubuntu-latest'

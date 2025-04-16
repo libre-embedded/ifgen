@@ -58,21 +58,19 @@ def unit_test_basic_method(
             writer.write("(void)src;")
 
         if task.instance["codec"]:
-            with writer.padding():
-                writer.write("src.swap();")
-
+            writer.empty()
             writer.c_comment("Eventually, we could assign member values here.")
 
             with writer.padding():
                 writer.write(f"{nspaced}::Buffer buffer;")
                 assert_line(
                     writer,
-                    f"src.encode(&buffer, endianness) == {nspaced}::size",
+                    f"src.encode<endianness>(&buffer) == {nspaced}::size",
                 )
 
             writer.write(f"{nspaced} dst;")
             assert_line(
-                writer, f"dst.decode(&buffer, endianness) == {nspaced}::size"
+                writer, f"dst.decode<endianness>(&buffer) == {nspaced}::size"
             )
             assert_line(writer, "src == dst")
 
@@ -98,8 +96,7 @@ def unit_test_body(task: GenerateTask, writer: IndentedFileWriter) -> None:
             "std::endian::little",
             "std::endian::big",
         ]:
-            name = unit_test_method_name(method, task)
-            writer.write(f"{name}({arg});")
+            writer.write(f"{unit_test_method_name(method, task)}<{arg}>();")
 
         writer.empty()
 

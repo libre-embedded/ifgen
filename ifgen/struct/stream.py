@@ -9,21 +9,13 @@ from vcorelib.io.file_writer import IndentedFileWriter
 from ifgen.generation.interface import GenerateTask
 
 
-def struct_istream(
-    task: GenerateTask, writer: IndentedFileWriter, header: bool
-) -> None:
+def struct_istream(task: GenerateTask, writer: IndentedFileWriter) -> None:
     """Generate an input-stream handling method."""
 
     writer.write(
-        (
-            "byte_istream &operator>>"
-            f"(byte_istream &stream, {task.name} &instance)"
-        )
-        + (";" if header else "")
+        "inline byte_istream &operator>>"
+        f"(byte_istream &stream, {task.name} &instance)"
     )
-
-    if header:
-        return
 
     with writer.scope():
         writer.write(
@@ -32,21 +24,13 @@ def struct_istream(
         writer.write("return stream;")
 
 
-def struct_ostream(
-    task: GenerateTask, writer: IndentedFileWriter, header: bool
-) -> None:
+def struct_ostream(task: GenerateTask, writer: IndentedFileWriter) -> None:
     """Generate an output-stream handling method."""
 
     writer.write(
-        (
-            "byte_ostream &operator<<"
-            f"(byte_ostream &stream, const {task.name} &instance)"
-        )
-        + (";" if header else "")
+        "inline byte_ostream &operator<<"
+        f"(byte_ostream &stream, const {task.name} &instance)"
     )
-
-    if header:
-        return
 
     with writer.scope():
         writer.write(
@@ -56,15 +40,10 @@ def struct_ostream(
 
 
 def struct_stream_methods(
-    task: GenerateTask, writer: IndentedFileWriter, header: bool
+    task: GenerateTask, writer: IndentedFileWriter
 ) -> None:
     """Generate struct stream read and write methods."""
 
     writer.c_comment("Stream interfaces.")
-
-    struct_istream(task, writer, header)
-
-    if not header:
-        writer.empty()
-
-    struct_ostream(task, writer, header)
+    struct_istream(task, writer)
+    struct_ostream(task, writer)
