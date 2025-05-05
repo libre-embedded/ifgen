@@ -64,7 +64,15 @@ def cpp_enum_neader(task: GenerateTask, writer: IndentedFileWriter) -> None:
         task, writer, task.instance["use_map"], definition=True
     )
 
-    writer.empty()
+    with writer.padding():
+        writer.write(
+            "inline std::ostream &operator<<(std::ostream &stream, "
+            f"{task.name} instance)"
+        )
+        with writer.scope():
+            writer.write("stream << to_string(instance);")
+            writer.write("return stream;")
+
     string_to_enum_function(
         task, writer, task.instance["use_map"], definition=True
     )
