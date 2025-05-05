@@ -20,6 +20,137 @@ def create_common_test(task: GenerateTask) -> None:
         writer.cpp_comment("TODO.")
 
 
+def endianness_single(writer: IndentedFileWriter) -> None:
+    """Add methods for byte-sized primitives."""
+
+    writer.c_comment("No action for byte-sized primitives.")
+    writer.write(
+        "template <byte_size T, std::endian endianness> "
+        "inline void handle_endian_p(T *)"
+    )
+    with writer.scope():
+        pass
+
+    writer.write(
+        "template <byte_size T, std::endian endianness> "
+        "inline T handle_endian(T elem)"
+    )
+    with writer.scope():
+        writer.write("return elem;")
+
+
+def endianness_native(writer: IndentedFileWriter) -> None:
+    """Add methods for native endianness (no swap)."""
+
+    writer.c_comment("No action if endianness is native.")
+    writer.write("template <std::integral T, std::endian endianness>")
+    writer.write("inline void handle_endian_p(T *)")
+    with writer.indented():
+        writer.write(
+            "requires(not byte_size<T>) && "
+            "(endianness == std::endian::native)"
+        )
+    with writer.scope():
+        pass
+
+    writer.write("template <std::integral T, std::endian endianness>")
+    writer.write("inline T handle_endian(T elem)")
+    with writer.indented():
+        writer.write(
+            "requires(not byte_size<T>) && "
+            "(endianness == std::endian::native)"
+        )
+    with writer.scope():
+        writer.write("return elem;")
+
+
+def endianness_integral(writer: IndentedFileWriter) -> None:
+    """Add methods for integral types that require swapping."""
+
+    writer.c_comment("Swap any integral type.")
+
+    writer.write("template <std::integral T, std::endian endianness>")
+    writer.write("inline T handle_endian(T elem)")
+    with writer.indented():
+        writer.write(
+            "requires(not byte_size<T>) && (endianness != std::endian::native)"
+        )
+    with writer.scope():
+        writer.write("return std::byteswap(elem);")
+
+    writer.write("template <std::integral T, std::endian endianness>")
+    writer.write("inline void handle_endian_p(T *elem)")
+    with writer.indented():
+        writer.write(
+            "requires(not byte_size<T>) && (endianness != std::endian::native)"
+        )
+    with writer.scope():
+        writer.write("*elem = std::byteswap(*elem);")
+
+
+def endianness_enum(writer: IndentedFileWriter) -> None:
+    """Add methods for enum types that require swapping."""
+
+    writer.c_comment("Handler for enum class types.")
+    writer.write("template <typename T, std::endian endianness>")
+    writer.write("inline void handle_endian_p(T *elem)")
+    with writer.indented():
+        writer.write("requires(std::is_enum_v<T>)")
+    with writer.scope():
+        writer.write("using underlying = std::underlying_type_t<T>;")
+        writer.write("handle_endian_p<underlying, endianness>(")
+        with writer.indented():
+            writer.write("reinterpret_cast<underlying *>(elem));")
+
+    writer.write("template <typename T, std::endian endianness>")
+    writer.write("inline T handle_endian(T elem)")
+    with writer.indented():
+        writer.write("requires(std::is_enum_v<T>)")
+    with writer.scope():
+        writer.write(
+            "return static_cast<T>(handle_endian<std::underlying_type_t<T>, "
+            "endianness>("
+        )
+        with writer.indented():
+            writer.write("std::to_underlying(elem)));")
+
+
+def endianness_float(writer: IndentedFileWriter) -> None:
+    """Add methods for floating-point types that require swapping."""
+
+    for width in ["32", "64"]:
+        writer.empty()
+        writer.c_comment(f"Handler for {width}-bit float.")
+        writer.write(
+            "template <std::floating_point T, std::endian endianness>"
+        )
+        writer.write("inline void handle_endian_p(T *elem)")
+
+        prim = f"uint{width}_t"
+
+        with writer.indented():
+            writer.write(f"requires(sizeof(T) == sizeof({prim}))")
+        with writer.scope():
+            writer.write(
+                f"handle_endian_p<{prim}, endianness>"
+                f"(reinterpret_cast<{prim} *>(elem));"
+            )
+
+        writer.write(
+            "template <std::floating_point T, std::endian endianness>"
+        )
+        writer.write("inline T handle_endian(T elem)")
+        with writer.indented():
+            writer.write(f"requires(sizeof(T) == sizeof({prim}))")
+        with writer.scope():
+            writer.write("return std::bit_cast<T>(")
+            with writer.indented():
+                writer.write(
+                    f"handle_endian<{prim}, endianness>"
+                    f"(std::bit_cast<{prim}>(elem)));"
+                )
+
+
 def common_endianness(writer: IndentedFileWriter, task: GenerateTask) -> None:
     """Write endianness-related content."""
 
@@ -41,65 +172,19 @@ def common_endianness(writer: IndentedFileWriter, task: GenerateTask) -> None:
     writer.write("concept byte_size = sizeof(T) == 1;")
 
     with writer.padding():
-        writer.c_comment("No action for byte-sized primitives.")
-        writer.write(
-            "template <byte_size T, std::endian endianness> "
-            "inline void handle_endian(T *)"
-        )
-        with writer.scope():
-            pass
+        endianness_single(writer)
 
-    writer.c_comment("No action if endianness is native.")
-    writer.write("template <std::integral T, std::endian endianness>")
-    writer.write("inline void handle_endian(T *)")
-    with writer.indented():
-        writer.write(
-            "requires(not byte_size<T>) && "
-            "(endianness == std::endian::native)"
-        )
-    with writer.scope():
-        pass
+    endianness_native(writer)
 
     writer.empty()
 
-    writer.c_comment("Swap any integral type.")
-    writer.write("template <std::integral T, std::endian endianness>")
-    writer.write("inline void handle_endian(T *elem)")
-    with writer.indented():
-        writer.write(
-            "requires(not byte_size<T>) && (endianness != std::endian::native)"
-        )
-    with writer.scope():
-        writer.write("*elem = std::byteswap(*elem);")
+    endianness_integral(writer)
 
-    for width in ["32", "64"]:
-        writer.empty()
-        writer.c_comment(f"Handler for {width}-bit float.")
-        writer.write(
-            "template <std::floating_point T, std::endian endianness>"
-        )
-        writer.write("inline void handle_endian(T *elem)")
-        with writer.indented():
-            writer.write(f"requires(sizeof(T) == sizeof(uint{width}_t))")
-        with writer.scope():
-            writer.write(
-                f"handle_endian<uint{width}_t, endianness>"
-                f"(reinterpret_cast<uint{width}_t *>(elem));"
-            )
+    endianness_float(writer)
 
     writer.empty()
 
-    writer.c_comment("Handler for enum class types.")
-    writer.write("template <typename T, std::endian endianness>")
-    writer.write("inline void handle_endian(T *elem)")
-    with writer.indented():
-        writer.write("requires(std::is_enum_v<T>)")
-    with writer.scope():
-        writer.write("handle_endian<std::underlying_type_t<T>, endianness>(")
-        with writer.indented():
-            writer.write(
-                "reinterpret_cast<std::underlying_type_t<T> *>(elem));"
-            )
+    endianness_enum(writer)
 
 
 def create_common(task: GenerateTask) -> None:
