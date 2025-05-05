@@ -1,13 +1,19 @@
 ---
+includes:
+  - package://ifgen/yambs.yaml
+
 variants:
   debug:
     cxx_standard: gnu++2b
     targets: [apps]
     suffix: "-13"
+    cflag_groups: &groups [ifgen]
 
   clang:
     cxx_standard: gnu++2b
     suffix: &clang_version "-18"
+    cflag_groups: *groups
 
   clang-opt:
     suffix: *clang_version
+    cflag_groups: *groups

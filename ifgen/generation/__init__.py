@@ -16,16 +16,11 @@ from ifgen.environment import Generator, IfgenEnvironment, Language
 from ifgen.generation.interface import GenerateTask, InstanceGenerator
 from ifgen.struct import (
     create_struct,
-    create_struct_source,
     create_struct_test,
 )
 
 GENERATORS: Dict[Generator, List[InstanceGenerator]] = {
-    Generator.STRUCTS: [
-        create_struct,
-        create_struct_test,
-        create_struct_source,
-    ],
+    Generator.STRUCTS: [create_struct, create_struct_test],
     Generator.ENUMS: [create_enum, create_enum_test, create_enum_source],
     Generator.IFGEN: [create_common, create_common_test],
 }

@@ -5,7 +5,6 @@ A module implementing a generation-environment interface.
 # built-in
 from enum import StrEnum
 from pathlib import Path
-from shutil import rmtree
 from typing import Any, NamedTuple, Optional
 
 # third-party
@@ -118,9 +117,7 @@ class IfgenEnvironment(LoggerMixin):
         for language, dirs in self.directories.items():
             for subdir in Generator:
                 for path in [dirs.output, dirs.test_dir]:
-                    dest = path.joinpath(subdir)
-                    rmtree(dest, ignore_errors=True)
-                    dest.mkdir(parents=True, exist_ok=True)
+                    path.joinpath(subdir).mkdir(parents=True, exist_ok=True)
 
         self.types = TypeSystem(*self.config.data["namespace"])
         self.padding = PaddingManager()

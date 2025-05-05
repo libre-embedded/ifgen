@@ -2,11 +2,11 @@
     =====================================
     generator=datazen
     version=3.2.1
-    hash=f52beb8434906bb5e9c2e273b4987a68
+    hash=b14f920169cc99e3d8a6e9df1c296dd3
     =====================================
 -->
 
-# ifgen ([4.0.2](https://pypi.org/project/ifgen/))
+# ifgen ([4.1.0](https://pypi.org/project/ifgen/))
 
 [![python](https://img.shields.io/pypi/pyversions/ifgen.svg)](https://pypi.org/project/ifgen/)
 ![Build Status](https://github.com/libre-embedded/ifgen/workflows/Python%20Package/badge.svg)
@@ -15,6 +15,8 @@
 ![Dependents (via libraries.io)](https://img.shields.io/librariesio/dependents/pypi/ifgen)
 
 *An interface generator for distributed computing.*
+
+Consider [sponsoring development](https://github.com/sponsors/libre-embedded).
 
 ([interface documentation](https://libre-embedded.github.io/python/ifgen))
 

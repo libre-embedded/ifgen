@@ -1,0 +1,4 @@
+---
+cflag_groups:
+  # Needed for pointer-based byte swapping.
+  ifgen: [-Wno-address-of-packed-member]

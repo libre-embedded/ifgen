@@ -2,6 +2,9 @@
 Utilities shared between struct methods.
 """
 
+# built-in
+from contextlib import ExitStack
+
 # third-party
 from vcorelib.io import IndentedFileWriter
 
@@ -9,72 +12,41 @@ from vcorelib.io import IndentedFileWriter
 from ifgen.generation.interface import GenerateTask
 
 
-def native_decode(writer: IndentedFileWriter) -> None:
-    """Write a buffer decoding method for native byte order."""
-
-    writer.write("auto buf = raw();")
-    writer.write("*buf = *buffer;")
-
-
-def native_encode(writer: IndentedFileWriter) -> None:
-    """Write a buffer encoding method for native byte order."""
-
-    writer.write("*buffer = *raw_ro();")
-
-
-def wrapper_method(
-    task: GenerateTask,
-    writer: IndentedFileWriter,
-    header: bool,
-    is_encode: bool = True,
+def swap_fields(
+    task: GenerateTask, writer: IndentedFileWriter, elem_prefix: str = ""
 ) -> None:
-    """Create a generic encode/decode method."""
+    """Generate code for swapping struct fields."""
 
-    method = task.cpp_namespace(
-        "encode" if is_encode else "decode", header=header
-    )
+    for field in task.instance["fields"]:
+        kind = field["type"]
 
-    if not header:
-        writer.c_comment(f"'{method}' defined in header.")
-        return
+        if field["padding"] or task.env.size(kind) == 1:
+            continue
 
-    line_start = f"inline std::size_t {method}("
-    line = line_start + ("const " if not is_encode else "") + "Buffer *buffer,"
+        name = field["name"]
 
-    writer.write(line)
-    line = ""
+        with ExitStack() as stack:
+            is_array = "array_length" in field
+            if is_array:
+                array_cmp = task.cpp_namespace(f"{name}_length")
+                writer.write(f"for (std::size_t i = 0; i < {array_cmp}; i++)")
+                stack.enter_context(writer.scope())
 
-    endian = (
-        f"std::endian::{task.instance['default_endianness']}"
-        if task.instance["default_endianness"]
-        != task.env.config.data["struct"]["default_endianness"]
-        else "default_endian"
-    )
-    line += (
-        " " * len(line_start) if header else ""
-    ) + f"std::endian endianness = {endian})"
+            elem = elem_prefix + name
+            if is_array:
+                elem += "[i]"
 
-    if is_encode:
-        line += " const"
+            kind_str = kind
+            if field["volatile"]:
+                kind_str = "volatile " + kind_str
 
-    writer.write(line)
-
-    with writer.scope():
-        writer.write("std::size_t result = size;")
-
-        with writer.padding():
-            writer.write("if (endianness == std::endian::native)")
-
-            with writer.scope():
-                # Use trivial implementation for native encode and decode.
-                if is_encode:
-                    native_encode(writer)
-                else:
-                    native_decode(writer)
-
-            writer.write("else")
-
-            with writer.scope():
-                writer.write(f"result = {method}_swapped(buffer);")
-
-        writer.write("return result;")
+            if task.env.is_struct(kind):
+                writer.write(f"{elem}.encode<endianness>({elem}.raw());")
+            elif task.env.is_enum(kind):
+                writer.write(
+                    f"handle_endian<{kind_str}, endianness>(&{elem});"
+                )
+            else:
+                writer.write(
+                    f"handle_endian<{kind_str}, endianness>(&{elem});"
+                )

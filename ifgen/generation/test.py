@@ -25,10 +25,8 @@ def unit_test_method(
 ) -> Iterator[None]:
     """Generate unit-test method boilerplate."""
 
-    unit_test_method_name(name, task)
-    writer.write(
-        f"void {unit_test_method_name(name, task)}(std::endian endianness)"
-    )
+    writer.write("template <std::endian endianness>")
+    writer.write(f"void {unit_test_method_name(name, task)}(void)")
     with writer.scope():
         nspace = task.env.types.root_namespace
 

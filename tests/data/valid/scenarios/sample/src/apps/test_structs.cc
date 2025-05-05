@@ -16,7 +16,7 @@
 
 static constexpr std::size_t len = 10;
 
-void test1_encode_decode(std::endian endianness)
+template <std::endian endianness> void test1_encode_decode(void)
 {
     using namespace A::B;
 
@@ -26,10 +26,10 @@ void test1_encode_decode(std::endian endianness)
     src.field3 = 2.5f;
 
     C::Test1::Buffer buffer;
-    assert(src.encode(&buffer, endianness) == C::Test1::size);
+    assert(src.encode<endianness>(&buffer) == C::Test1::size);
 
     C::Test1 dst;
-    assert(dst.decode(&buffer, endianness) == C::Test1::size);
+    assert(dst.decode<endianness>(&buffer) == C::Test1::size);
     assert(src == dst);
 
     /* Verify the values transferred. */
@@ -62,7 +62,7 @@ void test1_encode_decode(std::endian endianness)
     assert(not stream.good());
 }
 
-void test2_encode_decode(std::endian endianness)
+template <std::endian endianness> void test2_encode_decode(void)
 {
     using namespace A::B;
 
@@ -72,10 +72,10 @@ void test2_encode_decode(std::endian endianness)
     src.field3 = 2.5f;
 
     Test2::Buffer buffer;
-    assert(src.encode(&buffer, endianness) == Test2::size);
+    assert(src.encode<endianness>(&buffer) == Test2::size);
 
     Test2 dst;
-    assert(dst.decode(&buffer, endianness) == Test2::size);
+    assert(dst.decode<endianness>(&buffer) == Test2::size);
     assert(src == dst);
 
     /* Verify the values transferred. */
@@ -84,7 +84,7 @@ void test2_encode_decode(std::endian endianness)
     assert(dst.field3 == 2.5f);
 }
 
-void test3_encode_decode(std::endian endianness)
+template <std::endian endianness> void test3_encode_decode(void)
 {
     using namespace A::B;
 
@@ -102,10 +102,10 @@ void test3_encode_decode(std::endian endianness)
     src.field4 = C::Enum2::green;
 
     Test3::Buffer buffer = {};
-    assert(src.encode(&buffer, endianness) == Test3::size);
+    assert(src.encode<endianness>(&buffer) == Test3::size);
 
     Test3 dst = {};
-    assert(dst.decode(&buffer, endianness) == Test3::size);
+    assert(dst.decode<endianness>(&buffer) == Test3::size);
     assert(src == dst);
 
     assert(dst.field1 == 70000);
@@ -172,22 +172,6 @@ void test7_toggle_bits()
     assert(data.field1 == ((5 << 8) + 14));
 }
 
-void test2_byte_swap()
-{
-    using namespace A::B;
-
-    Test2 test2 = {};
-
-    auto buf = test2.raw();
-    (*buf)[1] = std::byte(0xa5);
-    (*buf)[2] = std::byte(0x5a);
-
-    test2.swap();
-
-    assert((*buf)[1] == std::byte(0x5a));
-    assert((*buf)[2] == std::byte(0xa5));
-}
-
 /**
  * A unit test for structs Test1.
  *
@@ -195,20 +179,19 @@ void test2_byte_swap()
  */
 int main(void)
 {
-    test1_encode_decode(std::endian::native);
-    test1_encode_decode(std::endian::little);
-    test1_encode_decode(std::endian::big);
+    test1_encode_decode<std::endian::native>();
+    test1_encode_decode<std::endian::little>();
+    test1_encode_decode<std::endian::big>();
 
-    test2_encode_decode(std::endian::native);
-    test2_encode_decode(std::endian::little);
-    test2_encode_decode(std::endian::big);
+    test2_encode_decode<std::endian::native>();
+    test2_encode_decode<std::endian::little>();
+    test2_encode_decode<std::endian::big>();
 
-    test3_encode_decode(std::endian::native);
-    test3_encode_decode(std::endian::little);
-    test3_encode_decode(std::endian::big);
+    test3_encode_decode<std::endian::native>();
+    test3_encode_decode<std::endian::little>();
+    test3_encode_decode<std::endian::big>();
 
     test7_toggle_bits();
-    test2_byte_swap();
 
     std::cout << "Success." << std::endl;
     return 0;

@@ -184,7 +184,7 @@ def cpp_struct_header(task: GenerateTask, writer: IndentedFileWriter) -> None:
 
     if task.instance["stream"]:
         writer.empty()
-        struct_stream_methods(task, writer, True)
+        struct_stream_methods(task, writer)
 
     for instance in task.instance.get("instances", []):
         struct_instance(task, writer, instance)
