@@ -36,17 +36,13 @@ def swap_fields(
             if is_array:
                 elem += "[i]"
 
-            kind_str = kind
-            if field["volatile"]:
-                kind_str = "volatile " + kind_str
-
             if task.env.is_struct(kind):
                 writer.write(f"{elem}.encode<endianness>({elem}.raw());")
             elif task.env.is_enum(kind):
                 writer.write(
-                    f"handle_endian<{kind_str}, endianness>(&{elem});"
+                    f"{elem} = handle_endian<{kind}, endianness>({elem});"
                 )
             else:
                 writer.write(
-                    f"handle_endian<{kind_str}, endianness>(&{elem});"
+                    f"{elem} = handle_endian<{kind}, endianness>({elem});"
                 )
