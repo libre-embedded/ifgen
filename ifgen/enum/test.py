@@ -19,10 +19,8 @@ def test_single(
     with_namespace = f"{task.name}::{enum}"
     writer.c_comment(f"Test {with_namespace}.")
 
-    to_string = f"to_string({with_namespace})"
-
-    writer.write(f"std::cout << {to_string} << std::endl;")
-    writer.write(f'assert(!strcmp({to_string}, "{enum}"));')
+    writer.write(f"std::cout << {with_namespace} << std::endl;")
+    writer.write(f'assert(!strcmp(to_string({with_namespace}), "{enum}"));')
     writer.write(f'assert(from_string("{enum}", instance));')
     writer.write(f"assert(instance == {with_namespace});")
 
