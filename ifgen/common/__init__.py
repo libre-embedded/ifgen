@@ -240,3 +240,11 @@ def create_common(task: GenerateTask) -> None:
             writer.write(
                 "using byte_spanstream = std::basic_spanstream<std::byte>;"
             )
+
+        writer.empty()
+        writer.c_comment("Constraint for generated structs.")
+        writer.write("template <typename T>")
+        writer.write("concept ifgen_struct = requires")
+        with writer.scope(suffix=";"):
+            writer.write("std::is_same_v<decltype(T::id), struct_id_t>;")
+            writer.write("std::is_same_v<decltype(T::size), std::size_t>;")
