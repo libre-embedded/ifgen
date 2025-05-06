@@ -3,6 +3,8 @@ namespace: [A, B]
 
 python_dir: [sample]
 
+clang_format: clang-format-18
+
 structs:
   Test1:
     json: true

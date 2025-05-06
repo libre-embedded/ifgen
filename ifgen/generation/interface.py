@@ -21,6 +21,7 @@ from runtimepy.codec.protocol import Protocol
 from runtimepy.enum import RuntimeEnum
 from vcorelib.io import IndentedFileWriter
 from vcorelib.namespace import CPP_DELIM
+from vcorelib.paths.context import TextPreprocessor
 
 # internal
 from ifgen import PKG_NAME, VERSION
@@ -168,7 +169,9 @@ class GenerateTask(NamedTuple):
         with ExitStack() as stack:
             writer = stack.enter_context(
                 IndentedFileWriter.from_path_if_different(
-                    self.source_path, per_indent=4
+                    self.source_path,
+                    per_indent=4,
+                    preprocessor=self._text_preprocessor(),
                 )
             )
 
@@ -249,6 +252,12 @@ class GenerateTask(NamedTuple):
 
         return description
 
+    def _text_preprocessor(self) -> Optional[TextPreprocessor]:
+        """
+        Get a text preprocessing method (i.e. code formatting) for this task.
+        """
+        return self.env.preprocessors.get(self.language)
+
     @contextmanager
     def boilerplate(
         self,
@@ -271,7 +280,9 @@ class GenerateTask(NamedTuple):
 
         with ExitStack() as stack:
             writer = stack.enter_context(
-                IndentedFileWriter.from_path_if_different(path, per_indent=4)
+                IndentedFileWriter.from_path_if_different(
+                    path, per_indent=4, preprocessor=self._text_preprocessor()
+                )
             )
 
             # Write file header.

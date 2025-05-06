@@ -27,7 +27,6 @@ def bit_field(
     parent: dict[str, Any],
     field: BitField,
     writer: IndentedFileWriter,
-    header: bool,
     read_fields: list[BitField],
     write_fields: list[BitField],
     alias: str = None,
@@ -45,19 +44,18 @@ def bit_field(
 
     # Generate a 'get' method.
     if field["read"]:
-        bit_field_get_method(task, parent, field, writer, header, alias=alias)
+        bit_field_get_method(task, parent, field, writer, alias=alias)
         read_fields.append(field)
 
     # Generate a 'set' method.
     if field["write"]:
-        bit_field_set_method(task, parent, field, writer, header, alias=alias)
+        bit_field_set_method(task, parent, field, writer, alias=alias)
         write_fields.append(field)
 
 
 def handle_atomic_fields_methods(
     task: GenerateTask,
     writer: IndentedFileWriter,
-    header: bool,
     field: dict[str, Any],
     read_fields: list[BitField],
     write_fields: list[BitField],
@@ -67,20 +65,16 @@ def handle_atomic_fields_methods(
 
     if len(read_fields) > 1:
         writer.empty()
-        bit_field_get_all_method(
-            task, writer, header, field, read_fields, alias=alias
-        )
+        bit_field_get_all_method(task, writer, field, read_fields, alias=alias)
 
     if len(write_fields) > 1:
         writer.empty()
         bit_field_set_all_method(
-            task, writer, header, field, write_fields, alias=alias
+            task, writer, field, write_fields, alias=alias
         )
 
 
-def bit_fields(
-    task: GenerateTask, writer: IndentedFileWriter, header: bool
-) -> None:
+def bit_fields(task: GenerateTask, writer: IndentedFileWriter) -> None:
     """Generate bit-field lines."""
 
     for field in task.instance["fields"]:
@@ -88,11 +82,9 @@ def bit_fields(
         write_fields: list[BitField] = []
 
         for bfield in field.get("fields", []):
-            bit_field(
-                task, field, bfield, writer, header, read_fields, write_fields
-            )
+            bit_field(task, field, bfield, writer, read_fields, write_fields)
         handle_atomic_fields_methods(
-            task, writer, header, field, read_fields, write_fields
+            task, writer, field, read_fields, write_fields
         )
 
         for alternate in field.get("alternates", []):
@@ -105,7 +97,6 @@ def bit_fields(
                     field,
                     bfield,
                     writer,
-                    header,
                     read_fields,
                     write_fields,
                     alias=alternate["name"],
@@ -113,7 +104,6 @@ def bit_fields(
             handle_atomic_fields_methods(
                 task,
                 writer,
-                header,
                 field,
                 read_fields,
                 write_fields,

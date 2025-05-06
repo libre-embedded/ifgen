@@ -174,9 +174,9 @@ def cpp_struct_header(task: GenerateTask, writer: IndentedFileWriter) -> None:
         writer.c_comment("Methods.")
 
         if task.instance["methods"]:
-            struct_methods(task, writer, True)
+            struct_methods(task, writer)
 
-        bit_fields(task, writer, True)
+        bit_fields(task, writer)
 
     # Add size assertion.
     writer.empty()
