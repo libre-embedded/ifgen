@@ -29,6 +29,10 @@ properties:
     items:
       type: string
 
+  clang_format:
+    type: string
+    default: clang-format
+
   command:
     type: string
     default: "\\"

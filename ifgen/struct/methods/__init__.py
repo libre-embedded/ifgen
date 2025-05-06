@@ -24,20 +24,14 @@ def protocol_json(task: GenerateTask) -> dict[str, Any]:
     return protocol.export_json()
 
 
-def span_method(
-    task: GenerateTask, writer: IndentedFileWriter, header: bool
-) -> None:
+def span_method(task: GenerateTask, writer: IndentedFileWriter) -> None:
     """Generate a span method."""
-
-    if not header:
-        writer.c_comment("Span method defined in header.")
-        return
 
     with writer.javadoc():
         writer.write(("Get this instance as a byte span."))
 
-    span_type = task.cpp_namespace("Span", header=header)
-    method = task.cpp_namespace("span", header=header)
+    span_type = task.cpp_namespace("Span")
+    method = task.cpp_namespace("span")
 
     writer.write(f"inline {span_type} {method}()")
 
@@ -48,13 +42,9 @@ def span_method(
 def struct_buffer_method(
     task: GenerateTask,
     writer: IndentedFileWriter,
-    header: bool,
     read_only: bool,
 ) -> None:
     """Generate a method for raw buffer access."""
-
-    if not header:
-        return
 
     with writer.javadoc():
         writer.write(
@@ -65,14 +55,14 @@ def struct_buffer_method(
             )
         )
 
-    buff_type = task.cpp_namespace("Buffer", header=header)
+    buff_type = task.cpp_namespace("Buffer")
 
     if read_only:
         buff_type = "const " + buff_type
 
     # Returns a pointer.
     method = task.cpp_namespace(
-        "raw()" if not read_only else "raw_ro()", prefix="*", header=header
+        "raw()" if not read_only else "raw_ro()", prefix="*"
     )
     writer.write(
         f"inline {buff_type} {method}" + (" const" if read_only else "")
@@ -184,32 +174,22 @@ def encode_decode_endian(
     decode_endian(task, writer)
 
 
-def struct_methods(
-    task: GenerateTask, writer: IndentedFileWriter, header: bool
-) -> None:
+def struct_methods(task: GenerateTask, writer: IndentedFileWriter) -> None:
     """Write generated-struct methods."""
 
-    if header:
-        writer.write("using Buffer = byte_array<size>;")
-        writer.write("using Span = byte_span<size>;")
-        with writer.padding():
-            writer.write(
-                f"auto operator<=>(const {task.name} &) const = default;"
-            )
+    writer.write("using Buffer = byte_array<size>;")
+    writer.write("using Span = byte_span<size>;")
+    with writer.padding():
+        writer.write(f"auto operator<=>(const {task.name} &) const = default;")
 
-    struct_buffer_method(task, writer, header, False)
+    struct_buffer_method(task, writer, False)
 
-    if header:
-        writer.empty()
+    with writer.padding():
+        span_method(task, writer)
 
-    span_method(task, writer, header)
+    struct_buffer_method(task, writer, True)
 
-    if header:
-        writer.empty()
-
-    struct_buffer_method(task, writer, header, True)
-
-    if task.instance["codec"] and header:
+    if task.instance["codec"]:
         writer.empty()
         encode_decode_endian(task, writer)
 
@@ -221,5 +201,5 @@ def struct_methods(
             dumps_indent=task.instance["json_indent"],
             task_name=False,
             static=True,
-            definition=header,
+            definition=True,
         )

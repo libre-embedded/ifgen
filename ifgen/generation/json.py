@@ -27,9 +27,6 @@ def to_json_method(
 ) -> None:
     """Create a _json() method for a given task."""
 
-    if static and not definition:
-        return
-
     writer.empty()
 
     if definition:

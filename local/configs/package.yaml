@@ -19,7 +19,7 @@ ci_local:
 
 requirements:
   - runtimepy>=5.11.4
-  - vcorelib>=3.5.7
+  - vcorelib>=3.5.9
   - "pytest<8.0.0; sys_platform == 'win32'"
 
 dev_requirements:

@@ -26,15 +26,11 @@ from ifgen.struct.methods.fields.common import (
 def bit_field_set_all_method(
     task: GenerateTask,
     writer: IndentedFileWriter,
-    header: bool,
     field: dict[str, Any],
     fields: list[BitField],
     alias: str = None,
 ) -> None:
     """Generate a 'set' method for multiple bit-field."""
-
-    if not header:
-        return
 
     name = field["name"] if not alias else alias
 
@@ -94,7 +90,6 @@ def bit_field_set_method(
     parent: dict[str, Any],
     field: BitField,
     writer: IndentedFileWriter,
-    header: bool,
     alias: str = None,
 ) -> None:
     """Generate a 'set' method for a bit-field."""
@@ -105,26 +100,22 @@ def bit_field_set_method(
     # Generate a toggle method for bit fields.
     if field["width"] == 1:
         bit_field_toggle_method(
-            task, parent["name"], field, writer, header, method_slug
+            task, parent["name"], field, writer, method_slug
         )
     else:
-        if not header:
-            return
-
         inner = possible_array_arg(parent)
         if inner:
             inner += ", "
         inner += f"{kind} value"
 
         method = task.cpp_namespace(
-            f"set_{method_slug}({inner}){task.method_suffix()}", header=header
+            f"set_{method_slug}({inner}){task.method_suffix()}"
         )
         writer.empty()
 
-        if header:
-            with writer.javadoc():
-                writer.write(f"Set {parent['name']}'s {field['name']} field.")
-                handle_description(writer, field)
+        with writer.javadoc():
+            writer.write(f"Set {parent['name']}'s {field['name']} field.")
+            handle_description(writer, field)
 
         writer.write("inline void " + method)
         with writer.scope():

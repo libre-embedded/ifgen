@@ -14,13 +14,14 @@ from runtimepy.enum import RuntimeEnum
 from vcorelib.logging import LoggerMixin
 from vcorelib.names import to_snake
 from vcorelib.paths import normalize, prune_empty_directories
+from vcorelib.paths.context import TextPreprocessor
 
 # internal
 from ifgen import PKG_NAME
 from ifgen.config import Config
 from ifgen.environment.field import process_field
 from ifgen.environment.padding import PaddingManager, type_string
-from ifgen.paths import combine_if_not_absolute
+from ifgen.paths import combine_if_not_absolute, create_formatter
 
 
 class Generator(StrEnum):
@@ -123,6 +124,11 @@ class IfgenEnvironment(LoggerMixin):
         self.padding = PaddingManager()
         self._register_enums()
         self._register_structs()
+
+        # Set up language-specific preprocessors.
+        self.preprocessors: dict[Language, TextPreprocessor] = {
+            Language.CPP: create_formatter(self.config.data["clang_format"])
+        }
 
     def prune_empty(self) -> None:
         """Attempt to eliminate any empty output directories."""

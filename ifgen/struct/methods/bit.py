@@ -27,17 +27,11 @@ def set_bit_method(
     name: str,
     field: dict[str, Any],
     writer: IndentedFileWriter,
-    header: bool,
     method_slug: str,
 ) -> None:
     """Generate a 'set' method for a bit-field."""
 
-    if not header:
-        return
-
-    method = task.cpp_namespace(
-        f"set_{method_slug}(){task.method_suffix()}", header=header
-    )
+    method = task.cpp_namespace(f"set_{method_slug}(){task.method_suffix()}")
     writer.empty()
 
     with writer.javadoc():
@@ -56,17 +50,11 @@ def clear_bit_method(
     name: str,
     field: dict[str, Any],
     writer: IndentedFileWriter,
-    header: bool,
     method_slug: str,
 ) -> None:
     """Generate a 'clear' method for a bit-field."""
 
-    if not header:
-        return
-
-    method = task.cpp_namespace(
-        f"clear_{method_slug}(){task.method_suffix()}", header=header
-    )
+    method = task.cpp_namespace(f"clear_{method_slug}(){task.method_suffix()}")
     writer.empty()
 
     with writer.javadoc():
@@ -85,19 +73,15 @@ def bit_field_toggle_method(
     name: str,
     field: dict[str, Any],
     writer: IndentedFileWriter,
-    header: bool,
     method_slug: str,
 ) -> None:
     """Generate a 'toggle' method for a bit-field."""
 
-    set_bit_method(task, name, field, writer, header, method_slug)
-    clear_bit_method(task, name, field, writer, header, method_slug)
-
-    if not header:
-        return
+    set_bit_method(task, name, field, writer, method_slug)
+    clear_bit_method(task, name, field, writer, method_slug)
 
     method = task.cpp_namespace(
-        f"toggle_{method_slug}(){task.method_suffix()}", header=header
+        f"toggle_{method_slug}(){task.method_suffix()}"
     )
     writer.empty()
 

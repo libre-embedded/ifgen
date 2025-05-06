@@ -23,15 +23,11 @@ from ifgen.struct.methods.fields.common import (
 def bit_field_get_all_method(
     task: GenerateTask,
     writer: IndentedFileWriter,
-    header: bool,
     field: dict[str, Any],
     fields: list[BitField],
     alias: str = None,
 ) -> None:
     """Generate a 'get' method for multiple bit-field."""
-
-    if not header:
-        return
 
     name = field["name"] if not alias else alias
 
@@ -94,19 +90,15 @@ def bit_field_get_method(
     parent: dict[str, Any],
     field: BitField,
     writer: IndentedFileWriter,
-    header: bool,
     alias: str = None,
 ) -> None:
     """Generate a 'get' method for a bit-field."""
-
-    if not header:
-        return
 
     inner = possible_array_arg(parent)
 
     method_slug = bit_field_method_slug(parent, field["name"], alias=alias)
     method = task.cpp_namespace(
-        f"get_{method_slug}({inner}){task.method_suffix()}", header=header
+        f"get_{method_slug}({inner}){task.method_suffix()}"
     )
     writer.empty()
 
