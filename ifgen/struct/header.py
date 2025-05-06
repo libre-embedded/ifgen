@@ -181,6 +181,7 @@ def cpp_struct_header(task: GenerateTask, writer: IndentedFileWriter) -> None:
     # Add size assertion.
     writer.empty()
     writer.write(f"static_assert(sizeof({task.name}) == {task.name}::size);")
+    writer.write(f"static_assert(ifgen_struct<{task.name}>);")
 
     if task.instance["stream"]:
         writer.empty()
