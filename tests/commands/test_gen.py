@@ -27,8 +27,6 @@ def test_ifgen_command_basic():
     # Attempt to build and run generated tests.
     if platform == "linux":
         run([executable, "-m", "yambs", "-C", str(path), "native"], check=True)
-        # format-check, don't check formatting until clang-format runs
-        # automatically or default-passing output is achieved
         run(
             ["ninja", "-C", str(path), "debug", "clang"],
             check=True,
@@ -43,3 +41,8 @@ def test_ifgen_command_basic():
             for variant in ["debug", "clang"]:
                 if name in tests:
                     run([data["variants"][variant]], check=True)
+
+        run(
+            ["ninja", "-C", str(path), "format-check"],
+            check=True,
+        )

@@ -127,7 +127,9 @@ class IfgenEnvironment(LoggerMixin):
 
         # Set up language-specific preprocessors.
         self.preprocessors: dict[Language, TextPreprocessor] = {
-            Language.CPP: create_formatter(self.config.data["clang_format"])
+            Language.CPP: create_formatter(
+                self.config.data["clang_format"], cwd=self.root_path
+            )
         }
 
     def prune_empty(self) -> None:

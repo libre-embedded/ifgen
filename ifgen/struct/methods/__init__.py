@@ -86,6 +86,48 @@ def endian_str(task: GenerateTask) -> str:
     )
 
 
+def handle_endian(task: GenerateTask, writer: IndentedFileWriter) -> None:
+    """Write a struct method for byte swapping."""
+
+    with writer.javadoc():
+        writer.write("Handle swapping bytes for endian conversion (native).")
+        writer.empty()
+        writer.write(
+            task.command(
+                "tparam",
+                "endianness Byte order for encoding elements.",
+            )
+        )
+
+    writer.write(f"template <std::endian endianness = {endian_str(task)}>")
+    writer.write("inline void endian(void)")
+    with writer.indented():
+        writer.write("requires(endianness == std::endian::native)")
+    with writer.scope():
+        pass
+
+    writer.empty()
+
+    with writer.javadoc():
+        writer.write(
+            "Handle swapping bytes for endian conversion (swap required)."
+        )
+        writer.empty()
+        writer.write(
+            task.command(
+                "tparam",
+                "endianness Byte order for encoding elements.",
+            )
+        )
+
+    writer.write(f"template <std::endian endianness = {endian_str(task)}>")
+    writer.write("inline void endian(void)")
+    with writer.indented():
+        writer.write("requires(endianness != std::endian::native)")
+    with writer.scope():
+        swap_fields(task, writer)
+
+
 def encode_endian(task: GenerateTask, writer: IndentedFileWriter) -> None:
     """Write a struct method for encoding buffers."""
 
@@ -108,21 +150,13 @@ def encode_endian(task: GenerateTask, writer: IndentedFileWriter) -> None:
     writer.write(f"template <std::endian endianness = {endian_str(task)}>")
     writer.write("inline std::size_t encode(Buffer *buffer) const")
     with writer.scope():
-        writer.c_comment("Check if buffer is external.")
-        writer.write("auto this_ro = raw_ro();")
-        writer.write("if (buffer != this_ro)")
-        with writer.scope():
-            writer.write("*buffer = *this_ro;")
+        writer.write("*buffer = *raw_ro();")
 
         with writer.padding():
-            writer.c_comment("Handle byte swapping if necessary.")
-            writer.write("if (endianness != std::endian::native)")
-            with writer.scope():
-                writer.write(
-                    f"auto other = reinterpret_cast<{task.name} *>(buffer);"
-                )
-                writer.write("(void)other;")
-                swap_fields(task, writer, elem_prefix="other->")
+            writer.write(
+                f"reinterpret_cast<{task.name} *>"
+                "(buffer)->endian<endianness>();"
+            )
 
         writer.write("return size;")
 
@@ -149,29 +183,12 @@ def decode_endian(task: GenerateTask, writer: IndentedFileWriter) -> None:
     writer.write(f"template <std::endian endianness = {endian_str(task)}>")
     writer.write("inline std::size_t decode(const Buffer *buffer)")
     with writer.scope():
-        writer.c_comment("Check if buffer is external.")
-        writer.write("auto this_raw = raw();")
-        writer.write("if (this_raw != buffer)")
-        with writer.scope():
-            writer.write("*this_raw = *buffer;")
+        writer.write("*raw() = *buffer;")
 
         with writer.padding():
-            writer.c_comment("Handle byte swapping if necessary.")
-            writer.write("if (endianness != std::endian::native)")
-            with writer.scope():
-                swap_fields(task, writer)
+            writer.write("endian<endianness>();")
 
         writer.write("return size;")
-
-
-def encode_decode_endian(
-    task: GenerateTask, writer: IndentedFileWriter
-) -> None:
-    """Write struct methods for encoding and decoding buffers."""
-
-    encode_endian(task, writer)
-    writer.empty()
-    decode_endian(task, writer)
 
 
 def struct_methods(task: GenerateTask, writer: IndentedFileWriter) -> None:
@@ -191,7 +208,11 @@ def struct_methods(task: GenerateTask, writer: IndentedFileWriter) -> None:
 
     if task.instance["codec"]:
         writer.empty()
-        encode_decode_endian(task, writer)
+        handle_endian(task, writer)
+        writer.empty()
+        encode_endian(task, writer)
+        writer.empty()
+        decode_endian(task, writer)
 
     if task.instance["json"]:
         to_json_method(
