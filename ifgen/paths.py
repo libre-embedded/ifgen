@@ -33,7 +33,7 @@ def audit_init_file(source: Path, parent_depth: int = 0) -> None:
         audit_init_file(source.parent, parent_depth=parent_depth)
 
 
-def create_formatter(*args: str) -> TextPreprocessor:
+def create_formatter(*args: str, **kwargs) -> TextPreprocessor:
     """
     Create a formatting preprocessor that uses stdin/stdout of a subprocess.
     """
@@ -50,6 +50,7 @@ def create_formatter(*args: str) -> TextPreprocessor:
                 text=True,
                 capture_output=True,
                 check=True,
+                **kwargs,
             ).stdout
 
         return result
