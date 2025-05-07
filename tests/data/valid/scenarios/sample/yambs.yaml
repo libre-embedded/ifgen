@@ -1,13 +1,12 @@
 ---
 variants:
   debug:
-    cxx_standard: gnu++2b
     targets: [apps]
-    suffix: "-13"
+    suffix: "-14"
+  opt:
+    suffix: "-14"
 
   clang:
-    cxx_standard: gnu++2b
-    suffix: &clang_version "-18"
-
+    suffix: "-19"
   clang-opt:
-    suffix: *clang_version
+    suffix: "-19"

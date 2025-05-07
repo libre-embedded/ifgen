@@ -246,5 +246,5 @@ def create_common(task: GenerateTask) -> None:
         writer.write("template <typename T>")
         writer.write("concept ifgen_struct = requires")
         with writer.scope(suffix=";"):
-            writer.write("std::is_same_v<decltype(T::id), struct_id_t>;")
+            writer.write("std::is_integral_v<decltype(T::id)>;")
             writer.write("std::is_same_v<decltype(T::size), std::size_t>;")

@@ -7,10 +7,9 @@ time_command: true
 
 ci_local:
   - "- uses: seanmiddleditch/gha-setup-ninja@master"
-  - "  with: {version: 1.11.1}"
   - "  if: matrix.system == 'ubuntu-latest'"
 
-  - "- run: sudo apt-get install gcc-13 g++-13 clang-18 clang-format-18"
+  - "- run: sudo apt-get install gcc-14 g++-14 clang-19 clang-format-19"
   - "  if: matrix.system == 'ubuntu-latest'"
 
   - "- run: pip${{'{{matrix.python-version}}'}} install -e ."

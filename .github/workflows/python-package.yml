@@ -42,9 +42,8 @@ jobs:
 
       # Begin project-specific setup.
       - uses: seanmiddleditch/gha-setup-ninja@master
-        with: {version: 1.11.1}
         if: matrix.system == 'ubuntu-latest'
-      - run: sudo apt-get install gcc-13 g++-13 clang-18 clang-format-18
+      - run: sudo apt-get install gcc-14 g++-14 clang-19 clang-format-19
         if: matrix.system == 'ubuntu-latest'
       - run: pip${{matrix.python-version}} install -e .
       - run: pip${{matrix.python-version}} install yambs
@@ -85,7 +84,7 @@ jobs:
 
       - run: |
           mk python-release owner=libre-embedded \
-                            repo=ifgen version=4.2.5
+                            repo=ifgen version=4.2.6
         if: |
           matrix.python-version == '3.12'
           && matrix.system == 'ubuntu-latest'
