@@ -3,6 +3,16 @@ namespace: [A, B]
 
 python_dir: [sample]
 
+plugins:
+  - sample.custom.test1
+  - sample.custom.test2
+custom:
+  file1: &data
+    a: 1
+    b: 2
+    c: 3
+  file2: *data
+
 clang_format: clang-format-18
 
 structs:

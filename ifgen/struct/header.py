@@ -4,7 +4,7 @@ A module implementing a struct header-file interface generator.
 
 # built-in
 from contextlib import ExitStack
-from typing import Any, Dict, Union
+from typing import Any
 
 # third-party
 from vcorelib.io.file_writer import (
@@ -20,7 +20,7 @@ from ifgen.struct.methods.fields import bit_fields
 from ifgen.struct.python import python_struct_header
 from ifgen.struct.stream import struct_stream_methods
 
-FieldConfig = Dict[str, Union[int, str]]
+FieldConfig = dict[str, int | str]
 
 
 def enforce_expected_size(

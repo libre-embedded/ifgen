@@ -30,6 +30,7 @@ class Generator(StrEnum):
     STRUCTS = "structs"
     ENUMS = "enums"
     IFGEN = PKG_NAME
+    CUSTOM = "custom"
 
 
 class Language(StrEnum):

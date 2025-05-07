@@ -4,7 +4,7 @@ A module implementing a data model for ARM CMSIS-SVD 'peripheral' data.
 
 # built-in
 from dataclasses import dataclass
-from typing import Iterable, List, Optional, Union
+from typing import Iterable, Optional, Union
 from xml.etree import ElementTree
 
 # internal
@@ -171,8 +171,8 @@ class Peripheral(DerivedMixin):
     derived_from: Optional["Peripheral"]
 
     # Currently treated as metadata.
-    interrupts: List[Interrupt]
-    address_blocks: List[AddressBlock]
+    interrupts: list[Interrupt]
+    address_blocks: list[AddressBlock]
 
     registers: RegisterData
 
