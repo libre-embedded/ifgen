@@ -29,6 +29,13 @@ properties:
     items:
       type: string
 
+  plugins:
+    type: array
+    items:
+      type: string
+  custom:
+    type: object
+
   clang_format:
     type: string
     default: clang-format

@@ -6,15 +6,7 @@ A module defining generator interfaces.
 from contextlib import ExitStack, contextmanager
 from json import dumps
 from pathlib import Path
-from typing import (
-    Any,
-    Callable,
-    Dict,
-    Iterable,
-    Iterator,
-    NamedTuple,
-    Optional,
-)
+from typing import Any, Callable, Iterable, Iterator, NamedTuple, Optional
 
 # third-party
 from runtimepy.codec.protocol import Protocol
@@ -28,8 +20,8 @@ from ifgen import PKG_NAME, VERSION
 from ifgen.environment import Generator, IfgenEnvironment, Language
 from ifgen.paths import audit_init_file
 
-InstanceConfig = Dict[str, Any]
-IfgenConfig = Dict[str, Any]
+InstanceConfig = dict[str, Any]
+IfgenConfig = dict[str, Any]
 
 
 class TypeLookup(NamedTuple):

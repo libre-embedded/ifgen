@@ -3,7 +3,7 @@ A module implementing interfaces for struct-file generation.
 """
 
 # built-in
-from typing import Dict, Iterable, Union
+from typing import Iterable
 
 # internal
 from ifgen import PKG_NAME
@@ -13,7 +13,7 @@ from ifgen.struct.test import create_struct_test
 from ifgen.struct.util import struct_dependencies
 
 __all__ = ["create_struct", "create_struct_test"]
-FieldConfig = Dict[str, Union[int, str]]
+FieldConfig = dict[str, int | str]
 
 
 def header_for_type(name: str, task: GenerateTask) -> str:

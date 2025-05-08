@@ -5,7 +5,7 @@ A module implementing unit-testing related generation utilities.
 # built-in
 from contextlib import ExitStack, contextmanager
 from os import linesep
-from typing import Iterator, List
+from typing import Iterator
 
 # third-party
 from vcorelib.io import IndentedFileWriter
@@ -65,7 +65,7 @@ def unit_test_main(
 @contextmanager
 def unit_test_boilerplate(
     task: GenerateTask,
-    includes: List[str] = None,
+    includes: list[str] = None,
     main: bool = True,
     declare_namespace: bool = False,
 ) -> Iterator[IndentedFileWriter]:

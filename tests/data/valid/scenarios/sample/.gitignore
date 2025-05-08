@@ -1,7 +1,7 @@
 src/generated
 src/apps/generated
 tasks
-sample
 README.md
 LICENSE
 .github
+sample/generated

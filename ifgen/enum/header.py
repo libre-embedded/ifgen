@@ -3,7 +3,7 @@ A module for generating enumeration header files.
 """
 
 # built-in
-from typing import Dict, Optional, Union
+from typing import Optional
 
 # third-party
 from vcorelib.io import IndentedFileWriter
@@ -14,7 +14,7 @@ from ifgen.enum.python import python_enum_header
 from ifgen.generation.interface import GenerateTask
 from ifgen.generation.json import to_json_method
 
-EnumConfig = Optional[Dict[str, Union[int, str]]]
+EnumConfig = Optional[dict[str, int | str]]
 
 
 def enum_line(name: str, value: EnumConfig) -> str:

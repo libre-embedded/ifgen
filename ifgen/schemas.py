@@ -3,7 +3,7 @@ A module for working with schemas belonging to this package.
 """
 
 # built-in
-from typing import Any, Dict
+from typing import Any
 from typing import Optional as _Optional
 
 # third-party
@@ -21,7 +21,7 @@ class IfgenDictCodec(_DictCodec):
     A simple wrapper for package classes that want to implement DictCodec.
     """
 
-    data: Dict[str, Any]
+    data: dict[str, Any]
 
     default_schemas: _Optional[_SchemaMap] = _JsonSchemaMap.from_package(
         PKG_NAME,
