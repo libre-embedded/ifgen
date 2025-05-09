@@ -147,14 +147,17 @@ class IfgenEnvironment(LoggerMixin):
         cfg_dir = langauge.cfg_dir_name
         if cfg_dir in self.config.data:
             dirs = self.config.data[cfg_dir]
-            source = combine_if_not_absolute(self.root_path, normalize(*dirs))
-            output = combine_if_not_absolute(
-                source, normalize(*self.config.data["output_dir"])
-            )
-            test_dir = combine_if_not_absolute(
-                source, normalize(*self.config.data["test_dir"])
-            )
-            result = Directories(dirs, source, output, test_dir)
+            if dirs:
+                source = combine_if_not_absolute(
+                    self.root_path, normalize(*dirs)
+                )
+                output = combine_if_not_absolute(
+                    source, normalize(*self.config.data["output_dir"])
+                )
+                test_dir = combine_if_not_absolute(
+                    source, normalize(*self.config.data["test_dir"])
+                )
+                result = Directories(dirs, source, output, test_dir)
 
         return result
 
