@@ -21,7 +21,7 @@ def write_imports(
 
     writer.empty()
     writer.write(f"# {label}")
-    for key, values in imports.items():
+    for key, values in sorted(imports.items()):
         writer.write(f"from {key} import {', '.join(values)}")
 
 
