@@ -121,7 +121,13 @@ class IfgenEnvironment(LoggerMixin):
                 for path in [dirs.output, dirs.test_dir]:
                     path.joinpath(subdir).mkdir(parents=True, exist_ok=True)
 
-        self.types = TypeSystem(*self.config.data["namespace"])
+        self.types = TypeSystem(
+            *(
+                self.config.data["namespace"]
+                if self.config.data["namespace"]
+                else [PKG_NAME.capitalize()]
+            )
+        )
         self.padding = PaddingManager()
         self._register_enums()
         self._register_structs()
@@ -152,10 +158,20 @@ class IfgenEnvironment(LoggerMixin):
                     self.root_path, normalize(*dirs)
                 )
                 output = combine_if_not_absolute(
-                    source, normalize(*self.config.data["output_dir"])
+                    source,
+                    (
+                        normalize(*self.config.data["output_dir"])
+                        if self.config.data["output_dir"]
+                        else ""
+                    ),
                 )
                 test_dir = combine_if_not_absolute(
-                    source, normalize(*self.config.data["test_dir"])
+                    source,
+                    (
+                        normalize(*self.config.data["test_dir"])
+                        if self.config.data["test_dir"]
+                        else ""
+                    ),
                 )
                 result = Directories(dirs, source, output, test_dir)
 
