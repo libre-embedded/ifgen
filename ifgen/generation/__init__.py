@@ -27,7 +27,7 @@ CodeGenerators = dict[Generator, list[InstanceGenerator]]
 GENERATORS: CodeGenerators = {
     Generator.STRUCTS: [create_struct, create_struct_test],
     Generator.ENUMS: [create_enum, create_enum_test, create_enum_source],
-    Generator.IFGEN: [create_common, create_common_test],
+    Generator.IFGEN: [],
     Generator.CUSTOM: [],
 }
 LOG = getLogger(__name__)
@@ -43,6 +43,11 @@ def resolve_generators(env: IfgenEnvironment) -> CodeGenerators:
         sys.path.append(path)
 
     generators = GENERATORS.copy()
+
+    if env.config.data["common"]:
+        generators[Generator.IFGEN].append(create_common)
+    if env.config.data["common_test"]:
+        generators[Generator.IFGEN].append(create_common_test)
 
     for custom in env.config.data.get("plugins", []):
         module, app = import_str_and_item(custom)
