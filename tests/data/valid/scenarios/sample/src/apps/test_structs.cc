@@ -7,6 +7,7 @@
 #undef NDEBUG
 #endif
 
+#include "generated/custom/struct_receiver.h"
 #include "generated/structs/Test1.h"
 #include "generated/structs/Test2.h"
 #include "generated/structs/Test3.h"
@@ -192,6 +193,9 @@ int main(void)
     test3_encode_decode<std::endian::big>();
 
     test7_toggle_bits();
+
+    A::B::StructReceiver receiver;
+    (void)receiver;
 
     std::cout << "Success." << std::endl;
     return 0;

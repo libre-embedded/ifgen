@@ -74,7 +74,7 @@ def cpp_struct_receiver(task: GenerateTask) -> None:
                 snake = to_snake(struct)
                 writer.write(f"{names_qualified[struct]} {snake};")
                 writer.write(
-                    f"struct_handler<{names_qualified[struct]}> "
+                    f"struct_handler<decltype({snake})> "
                     f"{snake}_handler = nullptr;"
                 )
                 writer.empty()
@@ -113,7 +113,9 @@ def cpp_struct_receiver(task: GenerateTask) -> None:
                     "handle_endian<struct_id_t, endianness>("
                 )
                 with writer.indented():
-                    writer.write("*reinterpret_cast<struct_id_t *>(data));")
+                    writer.write(
+                        "*reinterpret_cast<const struct_id_t *>(data));"
+                    )
                 writer.write("data += sizeof(struct_id_t);")
                 writer.write("len -= sizeof(struct_id_t);")
 
@@ -142,30 +144,23 @@ def cpp_struct_receiver(task: GenerateTask) -> None:
                     writer.write("break;")
 
                 for struct in structs:
-                    writer.write(f"case {names_qualified[struct]}::id:")
+                    writer.write(f"case decltype({snake})::id:")
                     snake = to_snake(struct)
                     with writer.indented():
-                        writer.write(
-                            f"if (len >= {names_qualified[struct]}::size)"
-                        )
+                        writer.write(f"if (len >= decltype({snake})::size)")
                         with writer.scope():
                             writer.write(f"if ({snake}_handler)")
                             with writer.scope():
                                 writer.write(f"{snake}.decode<endianness>(")
                                 with writer.indented():
                                     writer.write(
-                                        "reinterpret_cast<const "
-                                        f"{names_qualified[struct]}::"
-                                        "Buffer *>(data));"
+                                        f"reinterpret_cast<const decltype"
+                                        f"({snake}) *>(data)->raw_ro());"
                                     )
                                 writer.write(f"{snake}_handler({snake});")
 
-                            writer.write(
-                                f"data += {names_qualified[struct]}::size;"
-                            )
-                            writer.write(
-                                f"len -= {names_qualified[struct]}::size;"
-                            )
+                            writer.write(f"data += decltype({snake})::size;")
+                            writer.write(f"len -= decltype({snake})::size;")
 
                         writer.write("else")
                         with writer.scope():
