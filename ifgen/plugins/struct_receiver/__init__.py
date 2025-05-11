@@ -144,8 +144,8 @@ def cpp_struct_receiver(task: GenerateTask) -> None:
                     writer.write("break;")
 
                 for struct in structs:
-                    writer.write(f"case decltype({snake})::id:")
                     snake = to_snake(struct)
+                    writer.write(f"case decltype({snake})::id:")
                     with writer.indented():
                         writer.write(f"if (len >= decltype({snake})::size)")
                         with writer.scope():
