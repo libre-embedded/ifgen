@@ -17,7 +17,8 @@ from vcorelib.paths.context import TextPreprocessor
 
 # internal
 from ifgen import PKG_NAME, VERSION
-from ifgen.environment import Generator, IfgenEnvironment, Language
+from ifgen.enums import Generator, Language
+from ifgen.environment import IfgenEnvironment
 from ifgen.paths import audit_init_file
 
 InstanceConfig = dict[str, Any]

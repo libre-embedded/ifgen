@@ -50,7 +50,12 @@ def python_enums_structs(task: GenerateTask) -> tuple[list[str], list[str]]:
     return sorted(enums), sorted(structs)
 
 
-def python_dependencies(enums: list[str], structs: list[str]) -> PythonImports:
+def python_dependencies(
+    enums: list[str],
+    structs: list[str],
+    enum_prefix: str = "..enums",
+    struct_prefix: str = "",
+) -> PythonImports:
     """
     Get the names of external (to the module being generated) dependencies
     by type.
@@ -60,10 +65,10 @@ def python_dependencies(enums: list[str], structs: list[str]) -> PythonImports:
 
     for enum in enums:
         enum = cpp_ns_final(enum)
-        deps[f"..enums.{to_snake(enum)}"] = [enum]
+        deps[f"{enum_prefix}.{to_snake(enum)}"] = [enum]
     for struct in structs:
         struct = cpp_ns_final(struct)
-        deps[f".{to_snake(struct)}"] = [struct]
+        deps[f"{struct_prefix}.{to_snake(struct)}"] = [struct]
 
     return deps
 
@@ -168,6 +173,10 @@ def python_struct_header(
 
     proto = task.protocol()
 
+    id_underlying = strip_t_suffix(
+        task.env.config.data["struct"]["id_underlying"]
+    )
+
     with python_class(
         writer,
         task.name,
@@ -182,6 +191,7 @@ def python_struct_header(
                 f"enum_registry({', '.join(cpp_ns_final(x) for x in enums)}),"
             )
             writer.write(f"identifier={proto.id},")
+            writer.write("identifier_primitive=" f'"{id_underlying}",')
             writer.write(
                 "byte_order=STD_ENDIAN"
                 f"[\"{task.instance['default_endianness']}\"],"

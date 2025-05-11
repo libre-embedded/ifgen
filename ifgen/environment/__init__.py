@@ -3,7 +3,6 @@ A module implementing a generation-environment interface.
 """
 
 # built-in
-from enum import StrEnum
 from pathlib import Path
 from typing import Any, NamedTuple, Optional
 
@@ -19,47 +18,10 @@ from vcorelib.paths.context import TextPreprocessor
 # internal
 from ifgen import PKG_NAME
 from ifgen.config import Config
+from ifgen.enums import Generator, Language
 from ifgen.environment.field import process_field
 from ifgen.environment.padding import PaddingManager, type_string
 from ifgen.paths import combine_if_not_absolute, create_formatter
-
-
-class Generator(StrEnum):
-    """An enumeration declaring all valid kinds of generators."""
-
-    STRUCTS = "structs"
-    ENUMS = "enums"
-    IFGEN = PKG_NAME
-    CUSTOM = "custom"
-
-
-class Language(StrEnum):
-    """An enumeration declaring output generation variants."""
-
-    CPP = "CPP"
-    PYTHON = "Python"
-
-    @property
-    def source_suffix(self) -> str:
-        """Get a source-file suffix for this language."""
-        return "cc" if self is Language.CPP else "py"
-
-    @property
-    def header_suffix(self) -> str:
-        """Get a header-file suffix for this language."""
-        return "h" if self is Language.CPP else "py"
-
-    @property
-    def slug(self) -> str:
-        """Get a slug string."""
-        return to_snake(self.name)
-
-    @property
-    def cfg_dir_name(self) -> str:
-        """
-        Get the configuration key for this language's output configuration.
-        """
-        return f"{self.slug}_dir"
 
 
 def runtime_enum_data(data: dict[str, Any]) -> dict[str, int]:

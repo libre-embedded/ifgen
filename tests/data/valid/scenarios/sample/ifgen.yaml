@@ -1,4 +1,7 @@
 ---
+includes:
+  - package://ifgen/plugins/struct_receiver.yaml
+
 namespace: [A, B]
 
 python_dir: [sample]

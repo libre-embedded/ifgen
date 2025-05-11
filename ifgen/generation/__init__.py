@@ -16,8 +16,10 @@ from vcorelib.names import import_str_and_item
 from ifgen.common import create_common, create_common_test
 from ifgen.config import Config
 from ifgen.enum import create_enum, create_enum_source, create_enum_test
-from ifgen.environment import Generator, IfgenEnvironment, Language
+from ifgen.enums import Generator, Language
+from ifgen.environment import IfgenEnvironment
 from ifgen.generation.interface import GenerateTask, InstanceGenerator
+from ifgen.plugins import internal_plugin_entry
 from ifgen.struct import (
     create_struct,
     create_struct_test,
@@ -28,7 +30,7 @@ GENERATORS: CodeGenerators = {
     Generator.STRUCTS: [create_struct, create_struct_test],
     Generator.ENUMS: [create_enum, create_enum_test, create_enum_source],
     Generator.IFGEN: [],
-    Generator.CUSTOM: [],
+    Generator.CUSTOM: [internal_plugin_entry],
 }
 LOG = getLogger(__name__)
 
