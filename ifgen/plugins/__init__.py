@@ -22,5 +22,4 @@ def internal_plugin_entry(task: GenerateTask) -> None:
     """A generator for a struct receiver interface."""
 
     if task.name in PLUGINS and task.language in PLUGINS[task.name]:
-        with task.boilerplate(json=False, parent_depth=2) as writer:
-            PLUGINS[task.name][task.language](task, writer)
+        PLUGINS[task.name][task.language](task)

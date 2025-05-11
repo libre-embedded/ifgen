@@ -12,7 +12,7 @@ REPO=$(git rev-parse --show-toplevel)
 
 safe_pushd "$REPO/tests/data/valid/scenarios/sample"
 
-rm -rf src/generated src/apps/generated
+rm -rf src/generated src/apps/generated sample/generated
 ../../../../../venv/bin/ig gen
 
 safe_popd
