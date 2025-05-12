@@ -43,6 +43,19 @@ def apply_cpp_namespace(
     return data if not prefix else prefix + data
 
 
+@contextmanager
+def ifndef_guard(writer: IndentedFileWriter, text: str) -> Iterator[None]:
+    """Guard contents with header macro convention."""
+
+    writer.write(f"#ifndef {text}")
+    writer.write(f"#define {text}")
+    try:
+        yield
+    finally:
+        writer.empty()
+        writer.write("#endif")
+
+
 class GenerateTask(NamedTuple):
     """A container for instance-generation tasks."""
 
@@ -285,6 +298,15 @@ class GenerateTask(NamedTuple):
                 writer.empty()
                 if not is_test:
                     writer.write("#pragma once")
+
+                    stack.enter_context(
+                        ifndef_guard(
+                            writer,
+                            f"{self.namespace().replace('::', '_')}"
+                            f"_{path.parent.name.upper()}_"
+                            f"{self.path.name.upper().replace('.', '_')}",
+                        )
+                    )
                 else:
                     writer.write("#ifdef NDEBUG")
                     writer.write("#undef NDEBUG")
