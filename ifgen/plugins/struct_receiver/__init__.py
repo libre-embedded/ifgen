@@ -179,4 +179,4 @@ def cpp_struct_receiver(task: GenerateTask) -> None:
                 writer.c_comment("Continue if more bytes remain.")
                 writer.write("if (len)")
                 with writer.scope():
-                    writer.write("handle_message(data, len);")
+                    writer.write("handle_message<endianness>(data, len);")
