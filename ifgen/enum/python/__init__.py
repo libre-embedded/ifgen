@@ -48,10 +48,15 @@ def python_enum_header(task: GenerateTask, writer: IndentedFileWriter) -> None:
         built_in["enum"] = ["auto"]
     built_in["typing"] = ["Optional"]
 
+    runtime = task.enum()
+
     # Write imports.
+    imports = ["RuntimeIntEnum"]
+    if runtime.default:
+        imports.append("T")
     python_imports(
         writer,
-        third_party={"runtimepy.enum.registry": ["RuntimeIntEnum"]},
+        third_party={"runtimepy.enum.registry": imports},
         built_in=built_in,
     )
 
@@ -100,4 +105,19 @@ def python_enum_header(task: GenerateTask, writer: IndentedFileWriter) -> None:
             final_empty=0,
             decorators=["classmethod"],
         ):
-            writer.write(f"return {task.enum().id}")
+            writer.write(f"return {runtime.id}")
+
+        if runtime.default:
+            writer.empty()
+            with python_function(
+                writer,
+                "default",
+                "Get a possible default value for this enumeration.",
+                params="cls: type[T]",
+                return_type="Optional[T]",
+                final_empty=0,
+                decorators=["classmethod"],
+            ):
+                writer.write(
+                    f"return cls.normalize(\"{task.instance['default']}\")"
+                )

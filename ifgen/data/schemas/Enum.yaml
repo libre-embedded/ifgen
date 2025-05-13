@@ -29,6 +29,9 @@ properties:
   unit_test:
     type: boolean
 
+  default:
+    type: string
+
   underlying:
     type: string
     default: uint8_t

@@ -179,6 +179,7 @@ enums:
   Enum1:
     json: true
     underlying: uint16_t
+    default: B
     enum:
       A:
       B: {description: A sample value.}
@@ -190,6 +191,7 @@ enums:
     namespace: [C]
     description: "Sample enum 2."
     json_indent: 4
+    default: green
     enum: &enum
       unknown:
       red: {value: 1, description: A sample value.}

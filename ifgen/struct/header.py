@@ -43,6 +43,7 @@ def struct_line(
     volatile: bool,
     const: bool,
     array_length: int = None,
+    default: str = None,
 ) -> LineWithComment:
     """Build a string for a struct-field line."""
 
@@ -53,7 +54,9 @@ def struct_line(
     prefix = "volatile " if volatile else ""
     prefix += "const " if const else ""
 
-    if const:
+    if default:
+        line += f" = {default}"
+    elif const:
         line += " = {}"
 
     return prefix + f"{line};", value.get("description")  # type: ignore
@@ -96,6 +99,8 @@ def struct_fields(task: GenerateTask, writer: IndentedFileWriter) -> None:
                 for possible_union in all_fields:
                     if "type" not in possible_union:
                         possible_union["type"] = field["type"]
+
+                    # need to check for enum default
 
                     line, comment = struct_line(
                         possible_union["name"],

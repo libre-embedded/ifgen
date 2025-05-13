@@ -148,6 +148,7 @@ class IfgenEnvironment(LoggerMixin):
                 runtime_enum_data(enum["enum"]),
                 *enum["namespace"],
                 primitive=type_string(enum["underlying"]),
+                default=enum.get("default"),
             )
 
             self.logger.info(
