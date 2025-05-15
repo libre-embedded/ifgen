@@ -39,10 +39,6 @@ def swap_fields(
             if task.env.is_struct(kind):
                 writer.write(f"{elem}.endian<endianness>();")
             elif task.env.is_enum(kind):
-                writer.write(
-                    f"{elem} = handle_endian<{kind}, endianness>({elem});"
-                )
+                writer.write(f"{elem} = handle_endian<endianness>({elem});")
             else:
-                writer.write(
-                    f"{elem} = handle_endian<{kind}, endianness>({elem});"
-                )
+                writer.write(f"{elem} = handle_endian<endianness>({elem});")

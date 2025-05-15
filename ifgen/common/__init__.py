@@ -25,14 +25,14 @@ def endianness_single(writer: IndentedFileWriter) -> None:
 
     writer.c_comment("No action for byte-sized primitives.")
     writer.write(
-        "template <byte_size T, std::endian endianness> "
+        "template <std::endian endianness, byte_size T> "
         "inline void handle_endian_p(T *)"
     )
     with writer.scope():
         pass
 
     writer.write(
-        "template <byte_size T, std::endian endianness> "
+        "template <std::endian endianness, byte_size T> "
         "inline T handle_endian(T elem)"
     )
     with writer.scope():
@@ -43,7 +43,7 @@ def endianness_native(writer: IndentedFileWriter) -> None:
     """Add methods for native endianness (no swap)."""
 
     writer.c_comment("No action if endianness is native.")
-    writer.write("template <std::integral T, std::endian endianness>")
+    writer.write("template <std::endian endianness, std::integral T>")
     writer.write("inline void handle_endian_p(T *)")
     with writer.indented():
         writer.write(
@@ -53,7 +53,7 @@ def endianness_native(writer: IndentedFileWriter) -> None:
     with writer.scope():
         pass
 
-    writer.write("template <std::integral T, std::endian endianness>")
+    writer.write("template <std::endian endianness, std::integral T>")
     writer.write("inline T handle_endian(T elem)")
     with writer.indented():
         writer.write(
@@ -69,7 +69,7 @@ def endianness_integral(writer: IndentedFileWriter) -> None:
 
     writer.c_comment("Swap any integral type.")
 
-    writer.write("template <std::integral T, std::endian endianness>")
+    writer.write("template <std::endian endianness, std::integral T>")
     writer.write("inline T handle_endian(T elem)")
     with writer.indented():
         writer.write(
@@ -78,7 +78,7 @@ def endianness_integral(writer: IndentedFileWriter) -> None:
     with writer.scope():
         writer.write("return std::byteswap(elem);")
 
-    writer.write("template <std::integral T, std::endian endianness>")
+    writer.write("template <std::endian endianness, std::integral T>")
     writer.write("inline void handle_endian_p(T *elem)")
     with writer.indented():
         writer.write(
@@ -92,7 +92,7 @@ def endianness_enum(writer: IndentedFileWriter) -> None:
     """Add methods for enum types that require swapping."""
 
     writer.c_comment("Handler for enum class types.")
-    writer.write("template <typename T, std::endian endianness>")
+    writer.write("template <std::endian endianness, typename T>")
     writer.write("inline void handle_endian_p(T *elem)")
     with writer.indented():
         writer.write("requires(std::is_enum_v<T>)")
@@ -102,7 +102,7 @@ def endianness_enum(writer: IndentedFileWriter) -> None:
         with writer.indented():
             writer.write("reinterpret_cast<underlying *>(elem));")
 
-    writer.write("template <typename T, std::endian endianness>")
+    writer.write("template <std::endian endianness, typename T>")
     writer.write("inline T handle_endian(T elem)")
     with writer.indented():
         writer.write("requires(std::is_enum_v<T>)")
@@ -122,7 +122,7 @@ def endianness_float(writer: IndentedFileWriter) -> None:
         writer.empty()
         writer.c_comment(f"Handler for {width}-bit float.")
         writer.write(
-            "template <std::floating_point T, std::endian endianness>"
+            "template <std::endian endianness, std::floating_point T>"
         )
         writer.write("inline void handle_endian_p(T *elem)")
 
@@ -137,7 +137,7 @@ def endianness_float(writer: IndentedFileWriter) -> None:
             )
 
         writer.write(
-            "template <std::floating_point T, std::endian endianness>"
+            "template <std::endian endianness, std::floating_point T>"
         )
         writer.write("inline T handle_endian(T elem)")
         with writer.indented():

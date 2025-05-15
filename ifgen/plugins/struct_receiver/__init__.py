@@ -2,10 +2,16 @@
 A struct-receiver interface implementation.
 """
 
+# built-in
+from typing import Any
+
 # third-party
+from vcorelib.io.arbiter import ARBITER
 from vcorelib.names import to_snake
+from vcorelib.paths import rel
 
 # internal
+from ifgen.enums import Language
 from ifgen.generation.interface import GenerateTask
 from ifgen.generation.python import python_imports
 from ifgen.struct import header_for_type
@@ -34,6 +40,30 @@ def python_struct_receiver(task: GenerateTask) -> None:
             for struct in structs:
                 writer.write(struct + ",")
         writer.write(")")
+
+    runtimepy_structs: list[Any] = []
+    for struct in structs:
+        snake = to_snake(struct)
+        runtimepy_structs.append(
+            {
+                "name": snake,
+                "config": {
+                    "protocol_factory": ".".join(
+                        list(
+                            rel(
+                                task.env.directories[Language.PYTHON].output,
+                                base=task.env.root_path,
+                            ).parts
+                        )
+                        + ["structs", snake, struct]
+                    )
+                },
+            }
+        )
+
+    assert ARBITER.encode(
+        task.path.with_suffix(".yaml"), {"structs": runtimepy_structs}
+    )[0]
 
 
 # pylint: disable=too-many-statements
