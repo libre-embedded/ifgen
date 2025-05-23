@@ -11,12 +11,7 @@ from vcorelib.io import ARBITER
 
 # internal
 from ifgen.svd.group.base import PeripheralGroup, peripheral_groups
-from ifgen.svd.group.fields import (
-    DEFAULT_STRUCT,
-    EnumMap,
-    StructMap,
-    struct_fields,
-)
+from ifgen.svd.group.fields import EnumMap, StructMap, struct_fields
 from ifgen.svd.model.peripheral import Peripheral
 
 __all__ = ["PeripheralGroup", "peripheral_groups", "handle_group"]
@@ -56,7 +51,6 @@ def struct_data(
     # data["expected_size"] = size
     del size
 
-    data.update(DEFAULT_STRUCT)
     return data
 
 
