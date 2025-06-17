@@ -98,7 +98,7 @@ def endianness_enum(writer: IndentedFileWriter) -> None:
         writer.write("requires(std::is_enum_v<T>)")
     with writer.scope():
         writer.write("using underlying = std::underlying_type_t<T>;")
-        writer.write("handle_endian_p<underlying, endianness>(")
+        writer.write("handle_endian_p<endianness>(")
         with writer.indented():
             writer.write("reinterpret_cast<underlying *>(elem));")
 
@@ -107,10 +107,7 @@ def endianness_enum(writer: IndentedFileWriter) -> None:
     with writer.indented():
         writer.write("requires(std::is_enum_v<T>)")
     with writer.scope():
-        writer.write(
-            "return static_cast<T>(handle_endian<std::underlying_type_t<T>, "
-            "endianness>("
-        )
+        writer.write("return static_cast<T>(handle_endian<endianness>(")
         with writer.indented():
             writer.write("std::to_underlying(elem)));")
 
@@ -132,7 +129,7 @@ def endianness_float(writer: IndentedFileWriter) -> None:
             writer.write(f"requires(sizeof(T) == sizeof({prim}))")
         with writer.scope():
             writer.write(
-                f"handle_endian_p<{prim}, endianness>"
+                f"handle_endian_p<endianness>"
                 f"(reinterpret_cast<{prim} *>(elem));"
             )
 
@@ -146,7 +143,7 @@ def endianness_float(writer: IndentedFileWriter) -> None:
             writer.write("return std::bit_cast<T>(")
             with writer.indented():
                 writer.write(
-                    f"handle_endian<{prim}, endianness>"
+                    "handle_endian<endianness>"
                     f"(std::bit_cast<{prim}>(elem)));"
                 )
 
