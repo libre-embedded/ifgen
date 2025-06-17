@@ -60,6 +60,13 @@ def cpp_enum_neader(task: GenerateTask, writer: IndentedFileWriter) -> None:
         )
         writer.empty()
 
+    if runtime.default:
+        writer.write(
+            f"static constexpr auto {task.name}_default = "
+            f"{task.name}::{task.instance['default']};"
+        )
+        writer.empty()
+
     enum_to_string_function(
         task, writer, task.instance["use_map"], definition=True
     )

@@ -43,6 +43,7 @@ def struct_line(
     volatile: bool,
     const: bool,
     array_length: int = None,
+    default: str = None,
 ) -> LineWithComment:
     """Build a string for a struct-field line."""
 
@@ -53,7 +54,9 @@ def struct_line(
     prefix = "volatile " if volatile else ""
     prefix += "const " if const else ""
 
-    if const:
+    if default:
+        line += f" = {default}"
+    elif const:
         line += " = {}"
 
     return prefix + f"{line};", value.get("description")  # type: ignore
@@ -97,12 +100,33 @@ def struct_fields(task: GenerateTask, writer: IndentedFileWriter) -> None:
                     if "type" not in possible_union:
                         possible_union["type"] = field["type"]
 
+                    # Handle enum defaults.
+                    default = None
+                    if task.env.is_enum(possible_union["type"]):
+                        enum = task.env.get_enum(possible_union["type"])
+                        if enum.default:
+                            default = f"{possible_union['type']}_default"
+                            if "array_length" in field:
+                                default = (
+                                    "{"
+                                    + ", ".join(
+                                        [
+                                            default
+                                            for _ in range(
+                                                field["array_length"]
+                                            )
+                                        ]
+                                    )
+                                    + "}"
+                                )
+
                     line, comment = struct_line(
                         possible_union["name"],
                         possible_union,
                         possible_union["volatile"],
                         possible_union["const"],
                         array_length=possible_union.get("array_length"),
+                        default=default,
                     )
                     if is_union:
                         writer.write(

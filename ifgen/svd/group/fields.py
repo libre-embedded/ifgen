@@ -16,13 +16,6 @@ from ifgen.svd.model.peripheral import (
 
 StructMap = dict[str, Any]
 StructField = dict[str, Any]
-DEFAULT_STRUCT = {
-    "stream": False,
-    "codec": False,
-    "methods": False,
-    "unit_test": False,
-    "identifier": False,
-}
 
 
 def parse_offset(data: dict[str, str]) -> int:
@@ -66,8 +59,6 @@ def handle_cluster(
     # Too difficult due to padding (may need to comment out). Padding within
     # a cluster isn't currently handled.
     # cluster_struct["expected_size"] = size
-
-    cluster_struct.update(DEFAULT_STRUCT)
 
     raw_name = sanitize_name(cluster.name)
 

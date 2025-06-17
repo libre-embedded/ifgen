@@ -298,13 +298,19 @@ class GenerateTask(NamedTuple):
                 writer.empty()
                 if not is_test:
                     writer.write("#pragma once")
-
                     stack.enter_context(
                         ifndef_guard(
                             writer,
-                            f"{self.namespace().replace('::', '_')}"
-                            f"_{path.parent.name.upper()}_"
-                            f"{self.path.name.upper().replace('.', '_')}",
+                            "_".join(
+                                [
+                                    x.upper()
+                                    for x in [
+                                        self.namespace().replace("::", "_"),
+                                        path.parent.name,
+                                        self.path.name.replace(".", "_"),
+                                    ]
+                                ]
+                            ),
                         )
                     )
                 else:
