@@ -44,6 +44,19 @@ def python_imports(
     writer.empty(count=final_empty)
 
 
+def python_docstring(
+    writer: IndentedFileWriter, *docstrings: str, empty: bool = True
+) -> None:
+    """Write docstring data."""
+
+    writer.write('"""')
+    for docstring in docstrings:
+        writer.write(docstring)
+    writer.write('"""')
+    if empty:
+        writer.empty()
+
+
 @contextmanager
 def python_class(
     writer: IndentedFileWriter,
@@ -61,8 +74,7 @@ def python_class(
 
     writer.write(line)
     with writer.indented():
-        writer.write(f'"""{docstring}"""')
-        writer.empty()
+        python_docstring(writer, docstring)
         yield
 
     writer.empty(count=final_empty)
@@ -86,8 +98,7 @@ def python_function(
     writer.write(f"def {name}({params}) -> {return_type}:")
 
     with writer.indented():
-        writer.write(f'"""{docstring}"""')
-        writer.empty()
+        python_docstring(writer, docstring)
         yield
 
     writer.empty(count=final_empty)
