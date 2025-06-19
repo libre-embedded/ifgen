@@ -10,6 +10,7 @@ from vcorelib.io import IndentedFileWriter
 from ifgen.generation.interface import GenerateTask
 from ifgen.generation.python import (
     python_class,
+    python_docstring,
     python_function,
     python_imports,
 )
@@ -73,13 +74,9 @@ def python_enum_header(task: GenerateTask, writer: IndentedFileWriter) -> None:
             if value:
                 final = value.get("value", final)
 
-            line = f"{to_enum_name(enum)} = {final}"
+            writer.write(f"{to_enum_name(enum)} = {final}")
             if value and "description" in value:
-                line += f"  # {value['description']}"
-
-            writer.write(line)
-
-        writer.empty()
+                python_docstring(writer, value["description"])
 
         # Override underlying primitive if necessary.
         underlying = strip_t_suffix(task.instance["underlying"])
