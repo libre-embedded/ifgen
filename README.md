@@ -2,11 +2,11 @@
     =====================================
     generator=datazen
     version=3.2.3
-    hash=bb7c6c6ee9e74f924d3169c09662b491
+    hash=ad4ce6e07bb17efc31e796eb165cb185
     =====================================
 -->
 
-# ifgen ([4.4.5](https://pypi.org/project/ifgen/))
+# ifgen ([4.5.0](https://pypi.org/project/ifgen/))
 
 [![python](https://img.shields.io/pypi/pyversions/ifgen.svg)](https://pypi.org/project/ifgen/)
 ![Build Status](https://github.com/libre-embedded/ifgen/workflows/Python%20Package/badge.svg)
@@ -40,7 +40,7 @@ This package is tested on the following platforms:
 # Command-line Options
 
 ```
-$ ./venv3.12/bin/ig -h
+$ ./venv3.13/bin/ig -h
 
 usage: ig [-h] [--version] [-v] [-q] [--curses] [--no-uvloop] [-C DIR]
           {gen,svd,noop} ...
@@ -48,19 +48,19 @@ usage: ig [-h] [--version] [-v] [-q] [--curses] [--no-uvloop] [-C DIR]
 An interface generator for distributed computing.
 
 options:
-  -h, --help         show this help message and exit
-  --version          show program's version number and exit
-  -v, --verbose      set to increase logging verbosity
-  -q, --quiet        set to reduce output
-  --curses           whether or not to use curses.wrapper when starting
-  --no-uvloop        whether or not to disable uvloop as event loop driver
-  -C DIR, --dir DIR  execute from a specific directory
+  -h, --help      show this help message and exit
+  --version       show program's version number and exit
+  -v, --verbose   set to increase logging verbosity
+  -q, --quiet     set to reduce output
+  --curses        whether or not to use curses.wrapper when starting
+  --no-uvloop     whether or not to disable uvloop as event loop driver
+  -C, --dir DIR   execute from a specific directory
 
 commands:
-  {gen,svd,noop}     set of available commands
-    gen              generate interfaces
-    svd              process CMSIS-SVD files
-    noop             command stub (does nothing)
+  {gen,svd,noop}  set of available commands
+    gen           generate interfaces
+    svd           process CMSIS-SVD files
+    noop          command stub (does nothing)
 
 ```
 

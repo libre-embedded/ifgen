@@ -16,7 +16,7 @@ custom:
     c: 3
   file2: *data
 
-clang_format: clang-format-18
+clang_format: clang-format-19
 
 structs:
   Test1:
