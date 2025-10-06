@@ -138,10 +138,7 @@ def cpp_struct_receiver(task: GenerateTask) -> None:
                 writer.empty()
 
                 writer.c_comment("Read identifier and advance buffer.")
-                writer.write(
-                    "struct_id_t ident = "
-                    "handle_endian<struct_id_t, endianness>("
-                )
+                writer.write("struct_id_t ident = handle_endian<endianness>(")
                 with writer.indented():
                     writer.write(
                         "*reinterpret_cast<const struct_id_t *>(data));"

@@ -29,7 +29,8 @@ def get_enum_name(name: str, peripheral: str, raw_mapping: EnumValues) -> str:
 
     hashed = hash(
         ",".join(
-            name + f"={val['value']}" for name, val in raw_mapping.items()
+            name + f"={val['value']}"
+            for name, val in sorted(raw_mapping.items())
         )
     )
 
