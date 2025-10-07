@@ -43,7 +43,7 @@ def struct_data(
         peripheral.registers,
         structs,
         enums,
-        peripheral.base_name(lower=False),
+        peripheral.base_name(lower=False, strip_number=True),
         min_enum_members,
     )
 

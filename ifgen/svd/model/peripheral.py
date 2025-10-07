@@ -4,6 +4,7 @@ A module implementing a data model for ARM CMSIS-SVD 'peripheral' data.
 
 # built-in
 from dataclasses import dataclass
+from string import digits
 from typing import Iterable, Optional, Union
 from xml.etree import ElementTree
 
@@ -199,11 +200,13 @@ class Peripheral(DerivedMixin):
         """Get the possible 'access' field default."""
         return self.derived_elem.raw_data.get("access")
 
-    def base_name(self, lower: bool = True) -> str:
+    def base_name(self, lower: bool = True, strip_number: bool = False) -> str:
         """Get the base peripheral name."""
 
         result = self.name
         result = result.lower() if lower else result
+        if strip_number:
+            result = result.rstrip(digits)
         return result
 
     def handle_address_block(self, address_block: ElementTree.Element) -> None:
