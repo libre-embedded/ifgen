@@ -94,7 +94,11 @@ def bit_field_set_method(
 ) -> None:
     """Generate a 'set' method for a bit-field."""
 
-    method_slug = bit_field_method_slug(parent, field["name"], alias=alias)
+    method_slug = bit_field_method_slug(
+        parent,
+        member=(field["name"] if len(parent["fields"]) > 1 else ""),
+        alias=alias,
+    )
     kind = bit_field_underlying(field)
 
     # Generate a toggle method for bit fields.

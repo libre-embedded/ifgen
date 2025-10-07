@@ -96,7 +96,11 @@ def bit_field_get_method(
 
     inner = possible_array_arg(parent)
 
-    method_slug = bit_field_method_slug(parent, field["name"], alias=alias)
+    method_slug = bit_field_method_slug(
+        parent,
+        member=(field["name"] if len(parent["fields"]) > 1 else ""),
+        alias=alias,
+    )
     method = task.cpp_namespace(
         f"get_{method_slug}({inner}){task.method_suffix()}"
     )
