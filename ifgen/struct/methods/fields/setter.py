@@ -76,13 +76,20 @@ def bit_field_set_lines(
 
     mask = bit_mask_literal(field["width"])
 
-    yield f"{lhs} &= ~({mask} << {field['index']}u);"
+    idx = field["index"]
+    if idx > 0:
+        yield f"{lhs} &= ~({mask} << {idx}u);"
+    else:
+        yield f"{lhs} &= ~({mask});"
 
     val_str = value
     if task.env.is_enum(bit_field_underlying(field)):
         val_str = f"std::to_underlying({val_str})"
 
-    yield f"{lhs} |= ({val_str} & {mask}) << {field['index']}u;"
+    if idx > 0:
+        yield f"{lhs} |= ({val_str} & {mask}) << {idx}u;"
+    else:
+        yield f"{lhs} |= ({val_str} & {mask});"
 
 
 def bit_field_set_method(

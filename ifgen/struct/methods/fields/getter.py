@@ -70,14 +70,18 @@ def get_bit_field_statement(
     kind = bit_field_underlying(field)
 
     is_flag = field["width"] == 1
+    idx = field["index"]
 
     if is_flag:
-        stmt = f"{lhs} & (1u << {field['index']}u)"
+        if idx > 0:
+            stmt = f"{lhs} & (1u << {idx}u)"
+        else:
+            stmt = f"{lhs} & 1u"
     else:
-        stmt = (
-            f"({lhs} >> {field['index']}u) & "
-            f"{bit_mask_literal(field['width'])}"
-        )
+        if idx > 0:
+            stmt = f"({lhs} >> {idx}u) & {bit_mask_literal(field['width'])}"
+        else:
+            stmt = f"{lhs} & {bit_mask_literal(field['width'])}"
 
     if task.env.is_enum(kind):
         stmt = f"{kind}({stmt})"

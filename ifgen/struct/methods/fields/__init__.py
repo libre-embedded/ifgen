@@ -35,8 +35,13 @@ def bit_field(
 
     type_size = task.env.size(parent["type"]) * 8
 
-    index = field["index"]
     width = field["width"]
+
+    # Sub-methods not required.
+    if width == type_size:
+        return
+
+    index = field["index"]
 
     # Validate field parameters.
     assert index + width <= type_size, (index, width, type_size, field)
