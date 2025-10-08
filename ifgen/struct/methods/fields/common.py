@@ -10,6 +10,9 @@ BitField = dict[str, Any]
 
 def bit_mask_literal(width: int) -> str:
     """Get a bit-mask literal."""
+
+    if width % 4 == 0:
+        return "0x" + ("f" * (width // 4)) + "u"
     return "0b" + ("1" * width) + "u"
 
 
@@ -60,6 +63,6 @@ def bit_field_method_slug(
     """Get a method slug for a struct's bit-field method."""
 
     name = str(field["name"]) if not alias else alias
-    if member:
+    if member and member != name:
         name += "_" + member
     return name
