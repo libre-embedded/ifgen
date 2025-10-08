@@ -79,6 +79,9 @@ properties:
       unit_test:
         type: boolean
         default: true
+      packed:
+        type: boolean
+        default: true
 
       # https://en.cppreference.com/w/cpp/types/endian
       default_endianness:

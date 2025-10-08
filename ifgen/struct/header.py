@@ -164,8 +164,10 @@ def struct_instance(
 def cpp_struct_header(task: GenerateTask, writer: IndentedFileWriter) -> None:
     """Create the contents of a C++ struct header file."""
 
-    attributes = ["gnu::packed"]
-    writer.write(f"struct [[{', '.join(attributes)}]] {task.name}")
+    attributes = ["gnu::packed"] if task.instance["packed"] else None
+    attribute_str = f"[[{', '.join(attributes)}]]" if attributes else ""
+    writer.write(f"struct {attribute_str} {task.name}")
+
     with writer.scope(suffix=";"):
         writer.c_comment("Constant attributes.")
         with writer.trailing_comment_lines(

@@ -110,6 +110,7 @@ class SvdProcessingTask:
                     "codec": False,
                     "methods": False,
                     "unit_test": False,
+                    "packed": False,
                 },
                 "enum": {"use_map": False, "identifier": False},
             },
