@@ -70,14 +70,18 @@ def get_bit_field_statement(
     kind = bit_field_underlying(field)
 
     is_flag = field["width"] == 1
+    idx = field["index"]
 
     if is_flag:
-        stmt = f"{lhs} & (1u << {field['index']}u)"
+        if idx > 0:
+            stmt = f"{lhs} & (1u << {idx}u)"
+        else:
+            stmt = f"{lhs} & 1u"
     else:
-        stmt = (
-            f"({lhs} >> {field['index']}u) & "
-            f"{bit_mask_literal(field['width'])}"
-        )
+        if idx > 0:
+            stmt = f"({lhs} >> {idx}u) & {bit_mask_literal(field['width'])}"
+        else:
+            stmt = f"{lhs} & {bit_mask_literal(field['width'])}"
 
     if task.env.is_enum(kind):
         stmt = f"{kind}({stmt})"
@@ -96,7 +100,11 @@ def bit_field_get_method(
 
     inner = possible_array_arg(parent)
 
-    method_slug = bit_field_method_slug(parent, field["name"], alias=alias)
+    method_slug = bit_field_method_slug(
+        parent,
+        member=(field["name"] if len(parent["fields"]) > 1 else ""),
+        alias=alias,
+    )
     method = task.cpp_namespace(
         f"get_{method_slug}({inner}){task.method_suffix()}"
     )

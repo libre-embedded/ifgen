@@ -9,6 +9,7 @@ from typing import Any, Iterable, Optional, Type, TypeVar
 from xml.etree import ElementTree
 
 # third-party
+from ruamel.yaml.scalarstring import LiteralScalarString
 from vcorelib.logging import LoggerType
 
 
@@ -52,7 +53,9 @@ class StringKeyValueMixin(ABC):
         description = self.raw_data.get("description")
 
         if description:
-            data["description"] = (prefix if prefix else "") + description
+            data["description"] = LiteralScalarString(
+                (prefix if prefix else "") + description
+            ).replace("\\n", "")
 
         return data
 

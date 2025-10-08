@@ -41,7 +41,8 @@ def set_bit_method(
     writer.write("inline void " + method)
 
     with writer.scope():
-        stmt = f"1u << {field['index']}u"
+        idx = field["index"]
+        stmt = "1u" if idx == 0 else f"1u << {idx}u"
         writer.write(f"{name} |= {stmt};")
 
 
@@ -64,7 +65,8 @@ def clear_bit_method(
     writer.write("inline void " + method)
 
     with writer.scope():
-        stmt = f"~(1u << {field['index']}u)"
+        idx = field["index"]
+        stmt = "~(1u)" if idx == 0 else f"~(1u << {idx}u)"
         writer.write(f"{name} &= {stmt};")
 
 
@@ -92,5 +94,6 @@ def bit_field_toggle_method(
     writer.write("inline void " + method)
 
     with writer.scope():
-        stmt = f"1u << {field['index']}u"
+        idx = field["index"]
+        stmt = "1u" if idx == 0 else f"1u << {idx}u"
         writer.write(f"{name} ^= {stmt};")
