@@ -44,6 +44,7 @@ class Config(IfgenDictCodec, _BasicDictCodec):
             "stream",
             "methods",
             "default_endianness",
+            "packed",
         ]
         struct: dict[str, Any]
         for struct in data.get("structs", {}).values():  # type: ignore

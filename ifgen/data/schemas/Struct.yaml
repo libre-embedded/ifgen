@@ -19,6 +19,8 @@ properties:
     type: boolean
   unit_test:
     type: boolean
+  packed:
+    type: boolean
   default_endianness:
     type: string
     enum: [little, big, native]
