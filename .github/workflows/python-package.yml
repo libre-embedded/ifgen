@@ -84,7 +84,7 @@ jobs:
 
       - run: |
           mk python-release owner=libre-embedded \
-                            repo=ifgen version=4.6.1
+                            repo=ifgen version=4.6.2
         if: |
           matrix.python-version == '3.13'
           && matrix.system == 'ubuntu-latest'
