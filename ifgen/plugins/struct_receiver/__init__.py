@@ -18,10 +18,22 @@ from ifgen.struct import header_for_type
 from ifgen.struct.python import python_dependencies
 
 
+def get_receiver_struct_names(task: GenerateTask) -> list[str]:
+    """Get names of structs to create receiver entries for."""
+
+    data = task.env.config.data
+    return list(
+        x
+        for x in data.get("structs", {})
+        if data["structs"][x]["codec"]
+        and data["structs"][x].get("allocate", True)
+    )
+
+
 def python_struct_receiver(task: GenerateTask) -> None:
     """Python struct receiver generation."""
 
-    structs: list[str] = list(task.env.config.data.get("structs", {}))
+    structs = get_receiver_struct_names(task)
 
     with task.boilerplate(json=False, parent_depth=2) as writer:
         python_imports(
@@ -70,14 +82,11 @@ def python_struct_receiver(task: GenerateTask) -> None:
 def cpp_struct_receiver(task: GenerateTask) -> None:
     """C++ struct receiver generation."""
 
-    data = task.env.config.data
-    structs: list[str] = list(
-        x for x in data.get("structs", {}) if data["structs"][x]["codec"]
-    )
+    structs = get_receiver_struct_names(task)
 
     names_qualified = {}
     for struct in structs:
-        names = data["structs"][struct].get("namespace", [])
+        names = task.env.config.data["structs"][struct].get("namespace", [])
         names.append(struct)
         names_qualified[struct] = "::".join(names)
 

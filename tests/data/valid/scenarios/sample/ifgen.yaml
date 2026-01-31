@@ -41,6 +41,7 @@ structs:
 
   Test2:
     json: true
+    allocate: false
     fields:
       - name: field1
         type: int8_t
