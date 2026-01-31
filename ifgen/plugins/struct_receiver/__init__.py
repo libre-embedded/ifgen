@@ -48,10 +48,20 @@ def python_struct_receiver(task: GenerateTask) -> None:
         )
 
         writer.write("RECEIVER = StructReceiver(")
+        tlm_structs = []
         with writer.indented():
             for struct in structs:
                 writer.write(struct + ",")
+                if not task.env.config.data["structs"][struct].get(
+                    "control", True
+                ):
+                    tlm_structs.append(struct)
         writer.write(")")
+        if tlm_structs:
+            writer.empty()
+            writer.write("# Non-control structures.")
+            for struct in tlm_structs:
+                writer.write(f"RECEIVER.add_handler({struct}.id())")
 
     runtimepy_structs: list[Any] = []
     for struct in structs:

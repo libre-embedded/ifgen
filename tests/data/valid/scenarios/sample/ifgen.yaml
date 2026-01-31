@@ -55,6 +55,7 @@ structs:
 
   Test3:
     json: true
+    control: false
     fields: &fields
       - name: field1
         volatile: true
