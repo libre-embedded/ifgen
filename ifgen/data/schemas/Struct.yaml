@@ -11,6 +11,8 @@ properties:
   # Provide defaults from a higher-level configuration.
   allocate:
     type: boolean
+  control:
+    type: boolean
   codec:
     type: boolean
   stream:

@@ -60,6 +60,9 @@ def python_struct_receiver(task: GenerateTask) -> None:
             {
                 "name": snake,
                 "config": {
+                    "control": task.env.config.data["structs"][struct].get(
+                        "control", True
+                    ),
                     "protocol_factory": ".".join(
                         list(
                             rel(
@@ -68,7 +71,7 @@ def python_struct_receiver(task: GenerateTask) -> None:
                             ).parts
                         )
                         + ["structs", snake, struct]
-                    )
+                    ),
                 },
             }
         )
