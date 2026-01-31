@@ -2,11 +2,11 @@
     =====================================
     generator=datazen
     version=3.2.3
-    hash=ec5ae55a8d6c42daa7f83b2b7d845fa9
+    hash=47e16ba80a74deabfa1364e4fbd8ae0a
     =====================================
 -->
 
-# ifgen ([4.6.2](https://pypi.org/project/ifgen/))
+# ifgen ([4.6.3](https://pypi.org/project/ifgen/))
 
 [![python](https://img.shields.io/pypi/pyversions/ifgen.svg)](https://pypi.org/project/ifgen/)
 ![Build Status](https://github.com/libre-embedded/ifgen/workflows/Python%20Package/badge.svg)
