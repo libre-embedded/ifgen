@@ -139,6 +139,23 @@ structs:
         expected_size: 20
         array_length: 10
 
+  TestArrays2:
+    json: false
+    packed: false
+    fields:
+      - name: array1
+        type: uint32_t
+        volatile: true
+        array_length: 16
+      - name: array2
+        type: uint32_t
+        const: true
+        array_length: 16
+      - name: array3
+        type: uint32_t
+        # default: 0xffff not implemented yet
+        array_length: 16
+
   Test8:
     fields:
       - name: array1
