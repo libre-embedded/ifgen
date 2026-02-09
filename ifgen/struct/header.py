@@ -42,24 +42,30 @@ def struct_line(
     value: FieldConfig,
     volatile: bool,
     const: bool,
+    packed: bool,
     array_length: int = None,
     default: str = None,
 ) -> LineWithComment:
     """Build a string for a struct-field line."""
 
-    line = f"{value['type']} {name}"
-    if array_length is not None:
-        line += f"[{name}_length]"
-
     prefix = "volatile " if volatile else ""
     prefix += "const " if const else ""
+    line = str(value["type"])
+
+    if not packed and array_length is not None:
+        line = f"<{prefix}{value['type']}, {array_length}>"
+        prefix = "std::array"
+
+    line += f" {name}"
+    if packed and array_length is not None:
+        line += f"[{name}_length]"
 
     if default:
         line += f" = {default}"
     elif const:
         line += " = {}"
 
-    return prefix + f"{line};", value.get("description")  # type: ignore
+    return f"{prefix}{line};", value.get("description")  # type: ignore
 
 
 def struct_fields(task: GenerateTask, writer: IndentedFileWriter) -> None:
@@ -76,7 +82,7 @@ def struct_fields(task: GenerateTask, writer: IndentedFileWriter) -> None:
                 f"{task.name}.{field['name']}",
             )
 
-            if "array_length" in field:
+            if "array_length" in field and task.instance["packed"]:
                 lines.append(
                     (
                         (
@@ -125,6 +131,7 @@ def struct_fields(task: GenerateTask, writer: IndentedFileWriter) -> None:
                         possible_union,
                         possible_union["volatile"],
                         possible_union["const"],
+                        task.instance["packed"],
                         array_length=possible_union.get("array_length"),
                         default=default,
                     )

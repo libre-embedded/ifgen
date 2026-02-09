@@ -20,7 +20,7 @@ def swap_fields(
     for field in task.instance["fields"]:
         kind = field["type"]
 
-        if field["padding"] or task.env.size(kind) == 1:
+        if field["padding"] or task.env.size(kind) == 1 or field["const"]:
             continue
 
         name = field["name"]
@@ -28,7 +28,11 @@ def swap_fields(
         with ExitStack() as stack:
             is_array = "array_length" in field
             if is_array:
-                array_cmp = task.cpp_namespace(f"{name}_length")
+                array_cmp = task.cpp_namespace(
+                    f"{name}_length"
+                    if task.instance["packed"]
+                    else f"{name}.size()"
+                )
                 writer.write(f"for (std::size_t i = 0; i < {array_cmp}; i++)")
                 stack.enter_context(writer.scope())
 
