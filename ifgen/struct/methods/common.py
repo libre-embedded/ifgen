@@ -20,7 +20,7 @@ def swap_fields(
     for field in task.instance["fields"]:
         kind = field["type"]
 
-        if field["padding"] or task.env.size(kind) == 1:
+        if field["padding"] or task.env.size(kind) == 1 or field["const"]:
             continue
 
         name = field["name"]
