@@ -82,7 +82,10 @@ def struct_fields(task: GenerateTask, writer: IndentedFileWriter) -> None:
                 f"{task.name}.{field['name']}",
             )
 
-            if "array_length" in field and task.instance["packed"]:
+            standard_array = task.instance["packed"] or bool(
+                task.instance.get("instances")
+            )
+            if "array_length" in field and standard_array:
                 lines.append(
                     (
                         (
@@ -131,7 +134,7 @@ def struct_fields(task: GenerateTask, writer: IndentedFileWriter) -> None:
                         possible_union,
                         possible_union["volatile"],
                         possible_union["const"],
-                        task.instance["packed"],
+                        standard_array,
                         array_length=possible_union.get("array_length"),
                         default=default,
                     )

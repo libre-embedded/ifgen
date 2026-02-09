@@ -31,6 +31,7 @@ def swap_fields(
                 array_cmp = task.cpp_namespace(
                     f"{name}_length"
                     if task.instance["packed"]
+                    or bool(task.instance.get("instances"))
                     else f"{name}.size()"
                 )
                 writer.write(f"for (std::size_t i = 0; i < {array_cmp}; i++)")
