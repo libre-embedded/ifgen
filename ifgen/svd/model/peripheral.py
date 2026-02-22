@@ -83,7 +83,7 @@ class Register(DerivedMixin):
     def bits(self) -> int:
         """Get the size of this register in bits."""
         result = self.raw_data.get("size", self.peripheral.bits)
-        assert result is not None
+        assert result is not None, (self.name, self.peripheral.name)
         return int(result)
 
     @property
@@ -175,6 +175,7 @@ class Peripheral(DerivedMixin):
     address_blocks: list[AddressBlock]
 
     registers: RegisterData
+    system_width_bits: Optional[int]
 
     def register_groups(self) -> dict[str, list[Register]]:
         """Get register groups."""
@@ -190,8 +191,7 @@ class Peripheral(DerivedMixin):
     @property
     def bits(self) -> Optional[int]:
         """Get size for this peripheral in bits."""
-
-        result = self.derived_elem.raw_data.get("size")
+        result = self.derived_elem.raw_data.get("size", self.system_width_bits)
         return int(result) if result is not None else None
 
     @property

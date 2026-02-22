@@ -16,7 +16,10 @@ from ifgen.svd.task import SvdProcessingTask
 
 
 def process_peripheral(
-    elem: ElementTree.Element, task: SvdProcessingTask, logger: LoggerType
+    elem: ElementTree.Element,
+    task: SvdProcessingTask,
+    logger: LoggerType,
+    system_width_bits: int = 32,
 ) -> None:
     """Process a SVD peripheral element."""
 
@@ -25,7 +28,9 @@ def process_peripheral(
     if derived is not None:
         derived_periph = task.model.peripherals[derived]
 
-    peripheral = Peripheral.create(elem, derived_periph, [], [], [])
+    peripheral = Peripheral.create(
+        elem, derived_periph, [], [], [], system_width_bits
+    )
     peripheral.log(elem, logger)
 
     # Handle registers.
